@@ -25,11 +25,12 @@ for task in list.completed() {
     task.prio(); // "A"
     task.contexts(); // ["store"]
     task.projects(); // ["cooking"]
-    task.specials(); // ["recipe:cake"]
+    task.specials(); // [["recipe", "cake"],]
     task.completion_date(); // 2012-12-12
     task.inception_date(); // 2010-10-10
     task.text(); // "Buy milk"
     task.original(); // "x (A) 2012.12.12 2010.10.10 Buy milk @store +cooking recipe:cake"
+    task.is_done(); // true
 
     task.undone(); // mark task as undone
     task.update("x (A) Buy milk @store +cooking"); // update task
@@ -45,6 +46,7 @@ for task in list.uncompleted() {
     task.inception_date(); // 2010-10-10
     task.text(); // "Buy eggs"
     task.original(); // "(B) 2010.10.10 Buy eggs @store +cooking"
+    task.is_done(); // false
 
     task.done(); // mark task as done
     task.update("(B) 2010.10.10 Buy eggs \n @store +cooking"); // update task
@@ -52,11 +54,11 @@ for task in list.uncompleted() {
     task.original(); // "(B) 2010.10.10 Buy eggs @store +cooking"
 }
 
-let prio_a = list.by_prio("A"); // ["Buy milk"]
-let context = list.by_context("store"); // ["Buy milk", "Buy eggs"]
-let project = list.by_project("cooking"); // ["Buy milk", "Buy eggs"]
+let prio_a = list.by_prio("A"); // ["Buy milk"] -> TaskList
+let context = list.by_context("store"); // ["Buy milk", "Buy eggs"] -> TaskList
+let project = list.by_project("cooking"); // ["Buy milk", "Buy eggs"] -> TaskList
 
-let combo = list.by_prio("A").by_context("store").by_project("cooking"); // ["Buy milk"]
+let combo = list.by_prio("A").by_context("store").by_project("cooking"); // ["Buy milk"] -> TaskList
 ```
 
 ## Comparing tasks
