@@ -1,0 +1,89 @@
+use std::collections::{BTreeMap, VecDeque};
+
+use crate::Date;
+
+use super::Task;
+
+pub fn deserialize_task<S: AsRef<str>>(input: S) -> Task {
+    let mut tokens: VecDeque<&str> = input.as_ref().split_whitespace().collect();
+    let original_text = tokens.clone().into_iter().collect::<Vec<&str>>().join(" ");
+
+    let done = if tokens[0] == "x" { true } else { false };
+    if done {
+        let _ = tokens.pop_front();
+    }
+
+    let priority: Option<char> = {
+        if tokens[0].starts_with('(') && tokens[0].ends_with(')') && tokens[0].len() == 3 {
+            Some(tokens.pop_front().unwrap().chars().nth(1).unwrap())
+        } else {
+            None
+        }
+    };
+
+    let completion_date = {
+        let potential_date = deserialize_date(tokens.front().unwrap());
+        if potential_date.is_set() {
+            let _ = tokens.pop_front();
+            potential_date
+        } else {
+            Date::default()
+        }
+    };
+
+    let inception_date = {
+        let potential_date = deserialize_date(tokens.front().unwrap());
+        if potential_date.is_set() {
+            let _ = tokens.pop_front();
+            potential_date
+        } else {
+            Date::default()
+        }
+    };
+
+    let mut text = String::new();
+    let mut context_tags: Vec<String> = Vec::new();
+    let mut project_tags: Vec<String> = Vec::new();
+    let mut special_tags: BTreeMap<String, String> = BTreeMap::new();
+    // This also removes all newline characters
+    for token in tokens {
+        if token.starts_with('@') {
+            context_tags.push(token.to_string());
+        } else if token.starts_with('+') {
+            project_tags.push(token.to_string());
+        } else if !token.ends_with(':') && token.contains(':') && !token.contains("::") {
+            let (key, value) = token.split_once(':').unwrap();
+            special_tags.insert(key.to_string(), value.to_string());
+        } else {
+            text.push_str(token);
+        }
+    }
+
+    Task {
+        done,
+        priority,
+        completion_date,
+        inception_date,
+        text,
+        context_tags,
+        project_tags,
+        special_tags,
+        original_text,
+    }
+}
+
+pub fn deserialize_date<S: AsRef<str>>(input: S) -> Date {
+    let split_check = input.as_ref().split('-').collect::<Vec<&str>>();
+    if split_check.len() == 3 && split_check[0].len() == 4 && split_check[1].len() == 2 && split_check[2].len() == 2 {
+        let year = split_check[0].parse::<u16>();
+        let month = split_check[1].parse::<u8>();
+        let day = split_check[2].parse::<u8>();
+        if year.is_ok() && month.is_ok() && day.is_ok() {
+            Date::new(year.unwrap(), month.unwrap(), day.unwrap())
+        } else {
+            Date::default()
+        }
+    } else {
+        Date::default()
+    }
+}
