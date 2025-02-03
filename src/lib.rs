@@ -2,6 +2,6 @@ mod list;
 mod task;
 mod util;
 
-pub use list::*;
-pub use task::*;
-pub use util::*;
+pub use list::List;
+pub use task::Task;
+pub use util::{Date, TaskList};
