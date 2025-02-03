@@ -7,7 +7,7 @@ use builder::deserialize_task;
 
 use crate::Date;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Task {
     // storing this boolean saves loading the original text and checking if it starts with 'x'
     done: bool,
@@ -148,3 +148,10 @@ impl std::fmt::Display for Task {
         write!(f, "{}", self.original())
     }
 }
+
+impl From<&str> for Task {
+    fn from(text: &str) -> Self {
+        deserialize_task(text)
+    }
+}
+
