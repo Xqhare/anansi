@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, VecDeque};
 
-use crate::{deserialize_date, Date};
+use crate::{deserialise_date, Date};
 
 use super::Task;
 
@@ -27,7 +27,7 @@ pub fn deserialize_task<S: AsRef<str>>(input: S) -> Task {
     };
 
     let mut completion_date = {
-        let potential_date = deserialize_date(tokens.front().unwrap());
+        let potential_date = deserialise_date(tokens.front().unwrap());
         if potential_date.is_set() {
             let _ = tokens.pop_front();
             potential_date
@@ -37,7 +37,7 @@ pub fn deserialize_task<S: AsRef<str>>(input: S) -> Task {
     };
 
     let mut inception_date = {
-        let potential_date = deserialize_date(tokens.front().unwrap());
+        let potential_date = deserialise_date(tokens.front().unwrap());
         if potential_date.is_set() {
             let _ = tokens.pop_front();
             potential_date

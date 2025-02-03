@@ -2,7 +2,7 @@
 // Storing the same data as the string it is read as takes up 10 bytes.
 // This struct takes up 4 bytes!
 
-use super::deserialize_date;
+use super::deserialise_date;
 
 /// IMPORTANT: This struct assumes that no date will ever be in year 0, and that all dates be
 /// between 0 and 65_535.
@@ -63,6 +63,6 @@ impl std::fmt::Display for Date {
 
 impl From<&str> for Date {
     fn from(input: &str) -> Self {
-        deserialize_date(input)
+        deserialise_date(input)
     }
 }

@@ -4,7 +4,7 @@ mod task_list;
 pub use date::*;
 pub use task_list::*;
 
-pub fn deserialize_date<S: AsRef<str>>(input: S) -> Date {
+pub fn deserialise_date<S: AsRef<str>>(input: S) -> Date {
     let split_check = input.as_ref().split('-').collect::<Vec<&str>>();
     if split_check.len() == 3 && split_check[0].len() == 4 && split_check[1].len() == 2 && split_check[2].len() == 2 {
         let year = split_check[0].parse::<u16>();
