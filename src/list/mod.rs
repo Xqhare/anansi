@@ -200,4 +200,60 @@ impl List {
         open_filtered.append(&mut done_filtered);
         TaskList::new(open_filtered)
     }
+
+    /// Filter tasks by special tag.
+    ///
+    /// Will filter both open and done tasks.
+    /// This will filter by checking if the predicate is contained within any special tag key.
+    ///
+    /// The filter is case insensitive.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::{List, TaskList};
+    ///
+    /// let mut list = List::new("path/to/list.json");
+    /// list.add("Task 1");
+    /// list.add("Task 2 due:tomorrow");
+    /// list.add("Task 3 DUE:31.12");
+    /// list.add("x Task 4 assignment_due:2020-01-01");
+    /// 
+    /// for t in list.by_special("due").tasks() {
+    ///     println!("{:?}", t);
+    /// }
+    ///
+    /// assert_eq!(list.by_special("due").tasks().len(), 3);
+    /// assert_eq!(list.by_special("due"), TaskList::new(vec!["Task 2 due:tomorrow".into(), "Task 3 DUE:31.12".into(), "x Task 4 assignment_due:2020-01-01".into()]));
+    ///
+    /// assert_eq!(list.by_special("assignment").tasks().len(), 1);
+    /// ```
+    pub fn by_special<S: Into<String>>(&self, special: S) -> TaskList {
+        let special = special.into();
+        let mut open_filtered: Vec<Task> = self.open_tasks
+            .iter()
+            .filter(|task| {
+                for key in task.specials().keys() {
+                    if key.to_lowercase().contains(&special.to_lowercase()) {
+                        return true;
+                    }
+                }
+                return false;
+            })
+            .cloned()
+            .collect();
+        let mut done_filtered: Vec<Task> = self.done_tasks
+            .iter()
+            .filter(|task| {
+                for key in task.specials().keys() {
+                    if key.to_lowercase().contains(&special.to_lowercase()) {
+                        return true;
+                    }
+                }
+                return false;
+            })
+            .cloned()
+            .collect();
+        open_filtered.append(&mut done_filtered);
+        TaskList::new(open_filtered)
+    }
 }
