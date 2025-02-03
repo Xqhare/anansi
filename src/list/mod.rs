@@ -67,21 +67,76 @@ impl List {
         }
     }
 
+    /// Get all done tasks.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::{List, TaskList};
+    /// let mut list = List::new("path/to/list.json");
+    /// list.add("x Task 1");
+    /// list.add("Task 2");
+    /// let done_tasks = list.done();
+    /// assert_eq!(done_tasks.len(), 1);
+    /// ```
     pub fn done(&self) -> &Vec<Task> {
         &self.done_tasks
     }
 
+    /// Get all open tasks.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::{List, TaskList};
+    /// let mut list = List::new("path/to/list.json");
+    /// list.add("x Task 1");
+    /// list.add("Task 2");
+    /// let open_tasks = list.open();
+    /// assert_eq!(open_tasks.len(), 1);
+    /// ```
     pub fn open(&self) -> &Vec<Task> {
         &self.open_tasks
     }
 
+    /// Save the list to the file.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::List;
+    /// let mut list = List::new("list.txt");
+    /// list.add("Task 1");
+    /// list.add("Task 2");
+    ///
+    /// let result = list.save();
+    /// assert!(result.is_ok());
+    ///
+    /// # let _ = std::fs::remove_file("list.txt");
+    /// ```
     pub fn save(&self) -> Result<(), std::io::Error> {
         let serialised = serialise_list(self);
         std::fs::write(&self.file_path, serialised)
     }
 
+    /// Filter tasks by priority.
+    ///
+    /// Will filter both open and done tasks.
+    /// This will filter by checking if the predicate is contained within any priority tag.
+    ///
+    /// The filter is case insensitive.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::{List, TaskList};
+    ///
+    /// let mut list = List::new("path/to/list.json");
+    /// list.add("(A) Task 1");
+    /// list.add("(A) Task 2 @air");
+    /// list.add("(B) Task 3 @AIR");
+    /// list.add("(Z) Task 4 @AirCraft");
+    /// let filtered = list.by_prio("a");
+    /// assert_eq!(filtered.tasks().len(), 2);
+    /// ```
     pub fn by_prio<S: Into<String>>(&self, prio: S) -> TaskList {
-        let prio = prio.into();
+        let prio = prio.into().to_uppercase();
         let mut open_filtered: Vec<Task> = self.open_tasks
             .iter()
             .filter(|task| task.prio() == prio)
@@ -103,6 +158,8 @@ impl List {
     /// This means that calling `by_context("air")` would return tasks with context tags `air` or `aircraft`.
     ///
     /// The filter is case insensitive.
+    ///
+    /// Can be chained with any other `by_*` method.
     ///
     /// # Example
     /// ```
@@ -157,6 +214,8 @@ impl List {
     ///
     /// The filter is case insensitive.
     ///
+    /// Can be chained with any other `by_*` method.
+    ///
     /// # Example
     /// ```
     /// use anansi::{List, TaskList};
@@ -207,6 +266,8 @@ impl List {
     /// This will filter by checking if the predicate is contained within any special tag key.
     ///
     /// The filter is case insensitive.
+    ///
+    /// Can be chained with any other `by_*` method.
     ///
     /// # Example
     /// ```

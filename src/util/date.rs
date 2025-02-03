@@ -4,9 +4,12 @@
 
 use super::deserialise_date;
 
-/// IMPORTANT: This struct assumes that no date will ever be in year 0, and that all dates be
-/// between 0 and 65_535.
-#[derive(Debug, Clone, Copy)]
+/// Represents a date in the format `YYYY-MM-DD`.
+///
+/// While probably never constructed directly, it can be by using the `Date::new` function.
+/// 
+/// Date considers the date '0000-00-00' to be invalid.
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Date {
     year: u16,
     month: u8,
@@ -30,6 +33,21 @@ impl Default for Date {
 //                        General implementation
 // ---------------------------------------------------------------
 impl Date {
+    /// Creates a new date.
+    ///
+    /// # Arguments
+    /// 
+    /// * `year` - The year of the date.
+    /// * `month` - The month of the date.
+    /// * `day` - The day of the date.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::Date;
+    /// 
+    /// let date = anansi::Date::new(2022, 1, 1);
+    /// assert_eq!(date, Date::from("2022-01-01"));
+    /// ```
     pub fn new(year: u16, month: u8, day: u8) -> Date {
         Date {
             year,
@@ -39,6 +57,16 @@ impl Date {
     }
 
     /// Formats a date into the format `YYYY-MM-DD`
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::Date;
+    /// 
+    /// let date = anansi::Date::new(2022, 1, 1);
+    /// assert_eq!(date.format_date(), "2022-01-01");
+    /// let date = anansi::Date::default();
+    /// assert_eq!(date.format_date(), "");
+    /// ```
     pub fn format_date(&self) -> String {
         if self.year != 0 {
             format!("{:04}-{:02}-{:02}", self.year, self.month, self.day)
@@ -47,8 +75,19 @@ impl Date {
         }
     }
 
+    /// Returns `true` if the date is set.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::Date;
+    /// 
+    /// let date = anansi::Date::new(2022, 1, 1);
+    /// assert_eq!(date.is_set(), true);
+    /// let date = anansi::Date::default();
+    /// assert_eq!(date.is_set(), false);
+    /// ```
     pub fn is_set(&self) -> bool {
-        self.year != 0
+        self.year != 0 && self.month != 0 && self.day != 0
     }
 }
 
