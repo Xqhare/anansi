@@ -1,4 +1,5 @@
 mod builder;
+mod test;
 
 use std::collections::BTreeMap;
 
@@ -6,6 +7,7 @@ use builder::deserialize_task;
 
 use crate::Date;
 
+#[derive(Debug)]
 pub struct Task {
     // storing this boolean saves loading the original text and checking if it starts with 'x'
     done: bool,
@@ -19,6 +21,44 @@ pub struct Task {
     // storing key-value pairs for special tags
     special_tags: BTreeMap<String, String>,
     original_text: String,
+}
+
+impl PartialEq for Task {
+    fn eq(&self, other: &Self) -> bool {
+        self.prio() == other.prio()
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        self.prio() != other.prio()
+    }
+}
+
+impl PartialOrd for Task {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        let self_prio_as_int = self.prio().into_bytes();
+        let other_prio_as_int = other.prio().into_bytes();
+        // IMPORTANT: A has highest priority, but is the smallest byte value
+        // so we flip the comparison
+        other_prio_as_int.partial_cmp(&self_prio_as_int)
+    }
+
+    fn lt(&self, other: &Self) -> bool {
+        self.partial_cmp(other) == Some(std::cmp::Ordering::Less)
+    }
+
+    fn le(&self, other: &Self) -> bool {
+        self.partial_cmp(other) == Some(std::cmp::Ordering::Less)
+            || self.partial_cmp(other) == Some(std::cmp::Ordering::Equal)
+    }
+
+    fn gt(&self, other: &Self) -> bool {
+        self.partial_cmp(other) == Some(std::cmp::Ordering::Greater)
+    }
+
+    fn ge(&self, other: &Self) -> bool {
+        self.partial_cmp(other) == Some(std::cmp::Ordering::Greater)
+            || self.partial_cmp(other) == Some(std::cmp::Ordering::Equal)
+    }
 }
 
 impl Task {
@@ -43,12 +83,24 @@ impl Task {
         self.done
     }
 
-    pub fn done(&mut self) {
+    pub fn done(&mut self, completion_date: Option<Date>) {
         self.done = true;
+        if let Some(date) = completion_date {
+            self.original_text = format!("x ({}) {} {} {}", self.prio(), date, self.inception_date, self.text);
+            self.completion_date = date;
+        } else {
+            self.original_text = format!("x {}", self.original_text);
+        }
     }
 
     pub fn undone(&mut self) {
         self.done = false;
+        if self.completion_date.is_set() {
+            self.completion_date = Date::default();
+            self.original_text = format!("({}) {} {}", self.prio(), self.inception_date, self.text);
+        } else {
+            self.original_text = self.original_text.replacen("x ", "", 1);
+        }
     }
 
     pub fn prio(&self) -> String {
