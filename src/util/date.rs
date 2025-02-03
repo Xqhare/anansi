@@ -4,7 +4,7 @@
 
 /// IMPORTANT: This struct assumes that no date will ever be in year 0, and that all dates be
 /// between 0 and 65_535.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Date {
     year: u16,
     month: u8,
