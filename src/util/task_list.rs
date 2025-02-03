@@ -41,4 +41,55 @@ impl TaskList {
             .collect()
         )
     }
+
+    pub fn by_context<S: Into<String>>(&self, context: S) -> TaskList {
+        let context = context.into();
+        TaskList::new(self.tasks
+            .iter()
+            .filter(|task| {
+                for tag in task.contexts() {
+                    if tag.to_lowercase().contains(&context.to_lowercase()) {
+                        return true;
+                    }
+                }
+                return false;
+            })
+            .cloned()
+            .collect()
+        )
+    }
+
+    pub fn by_project<S: Into<String>>(&self, project: S) -> TaskList {
+        let project = project.into();
+        TaskList::new(self.tasks
+            .iter()
+            .filter(|task| {
+                for tag in task.projects() {
+                    if tag.to_lowercase().contains(&project.to_lowercase()) {
+                        return true;
+                    }
+                }
+                return false;
+            })
+            .cloned()
+            .collect()
+        )
+    }
+
+    pub fn by_special<S: Into<String>>(&self, special: S) -> TaskList {
+        let special = special.into();
+        TaskList::new(self.tasks
+            .iter()
+            .filter(|task| {
+                for key in task.specials().keys() {
+                    if key.to_lowercase().contains(&special.to_lowercase()) {
+                        return true;
+                    }
+                }
+                return false;
+            })
+            .cloned()
+            .collect()
+        )
+    }
 }
