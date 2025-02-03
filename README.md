@@ -4,6 +4,8 @@ Anansi is a ![todo.txt](https://github.com/todotxt/todo.txt) interface written i
 ## TODO
 - [ ] Tests
 - [ ] Documentation
+- [x] Backend
+- [x] Interface
 
 ## Usage
 Add Anansi as a dependency to your project.
