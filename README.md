@@ -17,8 +17,8 @@ use anansi::{List, Task};
 // If the path does not exist, it will be created
 let mut list = List::new("path/to/todo.txt");
 
-list.add("x (A) 2012.12.12 2010.10.10 Buy milk @store +cooking recipe:cake");
-list.add(Task::new("(B) 2010.10.10 Buy eggs @store +cooking"));
+list.add("x (A) 2012-12-12 2010-10-10 Buy milk @store +cooking recipe:cake");
+list.add(Task::new("(B) 2010-10-10 Buy eggs @store +cooking"));
 
 for task in list.done() {
     println!("{}", task);
@@ -29,7 +29,7 @@ for task in list.done() {
     task.completion_date(); // 2012-12-12 OR "" if done_with_date(date) was not called
     task.inception_date(); // 2010-10-10
     task.text(); // "Buy milk"
-    task.original(); // "x (A) 2012.12.12 2010.10.10 Buy milk @store +cooking recipe:cake"
+    task.original(); // "x (A) 2012-12-12 2010-10-10 Buy milk @store +cooking recipe:cake"
     task.is_done(); // true
 
     task.undone(); // mark task as undone
@@ -45,15 +45,15 @@ for task in list.open() {
     task.completion_date(); // 
     task.inception_date(); // 2010-10-10
     task.text(); // "Buy eggs"
-    task.original(); // "(B) 2010.10.10 Buy eggs @store +cooking"
+    task.original(); // "(B) 2010-10-10 Buy eggs @store +cooking"
     task.is_done(); // false
 
-    task.done(); // mark task as done
-    task.done_with_date("2012-12-12"); // mark task as done with date - Only works if inception date is set
+    task.done(None); // mark task as done
+    task.done_with_date(Some("2012-12-12")); // mark task as done with date - Only works if inception date is set
 
-    task.update("(B) 2010.10.10 Buy eggs \n @store +cooking"); // update task
+    task.update("(B) 2010-10-10 Buy eggs \n @store +cooking"); // update task
     // Newlines are automatically stripped from the input.
-    task.original(); // "(B) 2010.10.10 Buy eggs @store +cooking"
+    task.original(); // "(B) 2010-10-10 Buy eggs @store +cooking"
 }
 
 let prio = list.by_prio("A"); // TaskList
