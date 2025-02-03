@@ -1,6 +1,10 @@
 # Anansi
 Anansi is a ![todo.txt](https://github.com/todotxt/todo.txt) interface written in rust.
 
+## TODO
+- [ ] Tests
+- [ ] Documentation
+
 ## Usage
 Add Anansi as a dependency to your project.
 
