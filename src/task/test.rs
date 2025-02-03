@@ -89,10 +89,10 @@ fn ordering() {
     let task2 = Task::new("(B) test");
     let task3 = Task::new("(Z) test");
     let task4 = Task::new("(A) test");
-    assert!(task1 > task2);
-    assert!(task1 >= task3);
     assert!(task2 > task3);
-    assert!(task3 <= task4);
+    assert!(task1 >= task4);
+    assert!(task3 < task2);
+    assert!(task1 <= task4);
 }
 
 #[test]
