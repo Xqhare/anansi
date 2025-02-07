@@ -7,6 +7,44 @@ use builder::deserialize_task;
 
 use crate::Date;
 
+/// Represents a single task.
+/// A task is a single line in the todo.txt file.
+///
+/// To build a task, you can either use `Task::new(Into<String>)` or `Task::from<&str>`.
+/// The supplied text will be deserialised according to the 'todo.txt' format.
+///
+/// You cannot interact with the underlying data of a task directly, but you can use `Task::update()` for the same effect.
+/// Any data supplied to the `update()` function will be deserialised just like with `Task::new()`.
+/// - You can think of it more of a `overwrite` function as all costs associated with construction apply as well.
+///
+/// Task implements Ordering and Equivalence traits.
+/// Tasks are ordered and sorted by their priority only, with the highest priority being higher and thus bigger.
+/// So `A > B` and `B > C`, put generally `A > Z`.
+///
+/// # Example
+/// ```
+/// use anansi::Task;
+///
+/// let task1 = Task::new("(A) test");
+/// assert_eq!(task1.is_done(), false);
+/// assert_eq!(task1.prio(), "A");
+/// assert_eq!(task1.completion_date(), "");
+/// assert_eq!(task1.inception_date(), "");
+/// assert_eq!(task1.text(), "test");
+/// assert!(task1.projects().is_empty());
+/// assert!(task1.contexts().is_empty());
+/// assert!(task1.specials().is_empty());
+/// assert_eq!(task1.original(), "(A) test");
+///
+/// let task2 = Task::new("(B) test");
+/// let task3 = Task::new("(Z) test");
+/// let task4 = Task::new("(A) test 2");
+/// assert!(task4 > task2);
+/// assert!(task2 > task3 && task4 > task2);
+/// assert!(task1 >= task4);
+/// assert!(task4 != task2);
+/// assert!(task1 == task4);
+/// ```
 #[derive(Debug, Clone)]
 pub struct Task {
     // storing this boolean saves loading the original text and checking if it starts with 'x'
