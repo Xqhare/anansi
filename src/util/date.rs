@@ -7,7 +7,8 @@ use super::deserialise_date;
 /// Represents a date in the format `YYYY-MM-DD`.
 ///
 /// While probably never constructed directly, it can be by using the `Date::new` function.
-/// 
+/// Consider using the `Date::from` function instead. It takes any string (correctly formatted) as an argument.
+///
 /// Date considers the date '0000-00-00' to be invalid.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Date {
@@ -34,6 +35,8 @@ impl Default for Date {
 // ---------------------------------------------------------------
 impl Date {
     /// Creates a new date.
+    ///
+    /// Consider using the `Date::from<String>` function instead.
     ///
     /// # Arguments
     /// 
@@ -100,8 +103,8 @@ impl std::fmt::Display for Date {
     }
 }
 
-impl From<&str> for Date {
-    fn from(input: &str) -> Self {
+impl<S: AsRef<str>> From<S> for Date {
+    fn from(input: S) -> Self {
         deserialise_date(input)
     }
 }
