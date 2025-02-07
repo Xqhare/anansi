@@ -1,5 +1,12 @@
 use crate::Task;
 
+/// Represents a filtered list of tasks.
+///
+/// Never constructed directly.
+///
+/// Can be obtained with any `by_*` method, be it inside the `List` or `TaskList`.
+///
+/// If you want to update an existing task, make sure to use `Task::update()` on a task within `List` and not `TaskList`.
 #[derive(Debug, Clone)]
 pub struct TaskList {
     tasks: Vec<Task>,
