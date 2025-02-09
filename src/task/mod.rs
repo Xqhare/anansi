@@ -31,6 +31,7 @@ use crate::Date;
 /// assert_eq!(task1.completion_date(), "");
 /// assert_eq!(task1.inception_date(), "");
 /// assert_eq!(task1.text(), "test");
+/// assert_eq!(task1.description(), "test");
 /// assert!(task1.projects().is_empty());
 /// assert!(task1.contexts().is_empty());
 /// assert!(task1.specials().is_empty());
@@ -54,6 +55,7 @@ pub struct Task {
     completion_date: Date,
     inception_date: Date,
     text: String,
+    description: String,
     context_tags: Vec<String>,
     project_tags: Vec<String>,
     // storing key-value pairs for special tags
@@ -305,6 +307,21 @@ impl Task {
     /// ```
     pub fn text(&self) -> &String {
         &self.text
+    }
+
+    /// Returns the description of the task.
+    /// This includes tags, but excludes dates, priority and done status.
+    ///
+    /// # Example
+    /// 
+    /// ```
+    /// use anansi::Task;
+    /// 
+    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val");
+    /// assert_eq!(task.description(), "test");
+    /// ```
+    pub fn description(&self) -> &String {
+        &self.description
     }
 
     /// Returns the original text of the task.
