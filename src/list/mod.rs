@@ -25,9 +25,25 @@ impl List {
     /// ```
     pub fn new<P: Into<PathBuf>>(path: P) -> List {
         let file_path = path.into();
+        // TODO: To improve performance:
+        // 1. Read file as bytes
+        // 2. Loop through bytes, until a newline is reached
+        // 3. Take those bytes as a string and decode
+        // 4. Deal with trailing newline
+        //
+        // Current flow:
+        // 1. Decode bytes to string (in itself a loop through the bytes)
+        // 2. Trim whitespace
+        // 3. Loop through string, dividing by newlines
+        // 4. Loop through lines, creating tasks
+        //
+        // Changing flow would:
+        // 1. Use 1 loop instead of three
+        // 2. Reduce the amount of String allocations
+        // 3. Require a major code refactoring
         if let Ok(file) = std::fs::read_to_string(&file_path) {
             // load from file
-            deserialise_list(file_path, file)
+            deserialise_list(file_path, file.trim())
         } else {
             // new list for new file
             build_default_list(file_path)
