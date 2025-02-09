@@ -1,8 +1,17 @@
 # Anansi
 Anansi is a ![todo.txt](https://github.com/todotxt/todo.txt) interface written in rust.
 
+## Features
+- Platform agnostic
+- Easy to use
+
+## Roadmap
+- Improve performance
+    - Currently the 1.2 MB file takes about 140-150ms to load
+    - Can be improved by reducing usage of `std` and looping through the file once
+
 ## TODO
-- [ ] Tests
+- [x] Tests
 - [x] Documentation
 - [x] Backend
 - [x] Interface
@@ -34,7 +43,8 @@ for task in list.done() {
     task.specials(); // [["recipe", "cake"],]
     task.completion_date(); // 2012-12-12 OR "" if done_with_date(date) was not called
     task.inception_date(); // 2010-10-10
-    task.text(); // "Buy milk"
+    task.text(); // "Buy milk @store +cooking recipe:cake"
+    task.description(); // "Buy milk"
     task.original(); // "x (A) 2012-12-12 2010-10-10 Buy milk @store +cooking recipe:cake"
     task.is_done(); // true
 
@@ -50,7 +60,8 @@ for task in list.open() {
     task.specials(); // []
     task.completion_date(); // 
     task.inception_date(); // 2010-10-10
-    task.text(); // "Buy eggs"
+    task.text(); // "Buy eggs @store +cooking"
+    task.description(); // "Buy eggs"
     task.original(); // "(B) 2010-10-10 Buy eggs @store +cooking"
     task.is_done(); // false
 
