@@ -1,0 +1,9 @@
+x (A) lorem ipsum dolor sit amet +project1 @context2
+ (B) consectetur adipiscing elit +project1 @context3
+sed do eiusmod tempor incididunt ut labore et dolore magna aliqua +project2 @context2
+x (C) sed do eiusmod tempor incididunt ut labore et dolore magna aliqua +project2 @context3
+(D) sed do eiusmod tempor incididunt ut labore et dolore magna aliqua +project2 @context4
+2020-10-20 Task description +project1 @context2
+2020-10-20 Task description +project1 @context3
+x 2020-10-21 2020-10-20 Task description +project1 @context2
+x (A) 2020-10-21 2020-10-20 Task description +project1 @context3 keyword:value
