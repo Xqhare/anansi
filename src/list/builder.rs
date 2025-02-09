@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::Task;
+use crate::{util::{is_ascii_whitespace, is_newline}, Task};
 
 use super::List;
 
@@ -12,16 +12,34 @@ pub fn build_default_list<P: Into<PathBuf>>(path: P) -> List {
     }
 }
 
-pub fn deserialise_list<P: Into<PathBuf>, S: AsRef<str>>(path: P, contents: S) -> List {
+pub fn deserialise_list<P: Into<PathBuf>>(path: P, contents: &Vec<u8>) -> List {
     let mut open_tasks: Vec<Task> = Vec::new();
     let mut done_tasks: Vec<Task> = Vec::new();
+    let mut index: usize = 0;
 
-    for task in contents.as_ref().lines() {
-        let task = Task::new(task);
-        if task.is_done() {
-            done_tasks.push(task);
+    // leading whitespace removal
+    while is_ascii_whitespace(contents[index]) {
+        index += 1;
+    }
+
+    let mut line_start_index = index;
+    // Loop through file
+    while index < contents.len() {
+        let is_newline = is_newline(index, &contents);
+        if is_newline.0 {
+            // End of line
+            // Lossy should be fine here, can be done properly if needs must
+            let task = Task::new(String::from_utf8_lossy(&contents[line_start_index..index]));
+            if task.is_done() {
+                done_tasks.push(task);
+            } else {
+                open_tasks.push(task);
+            }
+            index = is_newline.1;
+            line_start_index = index;
         } else {
-            open_tasks.push(task);
+            // Inside line
+            index += 1;
         }
     }
 
@@ -30,6 +48,7 @@ pub fn deserialise_list<P: Into<PathBuf>, S: AsRef<str>>(path: P, contents: S) -
         open_tasks,
         done_tasks,
     }
+
 }
 
 pub fn serialise_list(list: &List) -> String {

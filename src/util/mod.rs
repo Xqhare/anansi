@@ -24,3 +24,35 @@ pub fn deserialise_date<S: AsRef<str>>(input: S) -> Date {
         Date::default()
     }
 }
+
+pub fn is_ascii_whitespace(byte_value: u8) -> bool {
+    byte_value == 0x09 || byte_value == 0x0A || byte_value == 0x0B || byte_value == 0x0C || byte_value == 0x0D || byte_value == 0x20
+}
+
+pub fn is_ascii_digit(byte_value: u8) -> bool {
+    byte_value >= 0x30 && byte_value <= 0x39
+}
+
+/// Returns `(`is_newline`, `new_index`)`
+/// 
+/// - `new_index` is the index after the newline characters OR the current index if it is not a newline
+/// - `is_newline` is true if the current index is a newline (`\r\n`, `\r`, `\n`)
+pub fn is_newline(index: usize, contents: &Vec<u8>) -> (bool, usize) {
+    if index >= contents.len() {
+        return (false, index);
+    }
+
+    if contents[index] == b'\r' {
+        if index + 1 < contents.len() && contents[index + 1] == b'\n' {
+            return (true, index + 2);
+        } else {
+            return (true, index + 1);
+        }
+    } else {
+        if contents[index] == b'\n' {
+            return (true, index + 1);
+        } else {
+            return (false, index);
+        }
+    } 
+}

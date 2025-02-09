@@ -41,9 +41,9 @@ impl List {
         // 1. Use 1 loop instead of three
         // 2. Reduce the amount of String allocations
         // 3. Require a major code refactoring
-        if let Ok(file) = std::fs::read_to_string(&file_path) {
+        if let Ok(file) = std::fs::read(&file_path) {
             // load from file
-            deserialise_list(file_path, file.trim())
+            deserialise_list(file_path, &file)
         } else {
             // new list for new file
             build_default_list(file_path)
