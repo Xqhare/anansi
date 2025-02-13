@@ -8,7 +8,6 @@ Anansi is a ![todo.txt](https://github.com/todotxt/todo.txt) interface written i
 ## Roadmap
 - Improve performance
     - Currently the 1.2 MB file takes about 140-150ms to load
-    - Can be improved by reducing usage of `std` and looping through the file once
 
 ## TODO
 - [x] Tests
