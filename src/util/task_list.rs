@@ -12,6 +12,12 @@ pub struct TaskList {
     tasks: Vec<Task>,
 }
 
+impl From<Vec<Task>> for TaskList {
+    fn from(tasks: Vec<Task>) -> Self {
+        TaskList { tasks }
+    }
+}
+
 impl PartialEq for TaskList {
     fn eq(&self, other: &Self) -> bool {
         if self.tasks.len() != other.tasks.len() {
@@ -31,6 +37,11 @@ impl PartialEq for TaskList {
 }
 
 impl TaskList {
+    /// Get the number of tasks in the TaskList
+    pub fn len(&self) -> usize {
+        self.tasks.len()
+    }
+
     /// Create a new task list from a vector of tasks
     pub fn new(tasks: Vec<Task>) -> TaskList {
         TaskList { tasks }
