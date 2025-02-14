@@ -50,6 +50,16 @@ impl List {
         }
     }
 
+    /// Add a task to the list.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::List;
+    /// let mut list = List::new("path/to/list.json");
+    /// list.add("Task 1");
+    /// list.add("Task 2");
+    /// assert_eq!(list.open().len(), 2);
+    /// ```
     pub fn add<S: Into<Task>>(&mut self, task: S) {
         let task: Task = task.into();
         if task.is_done() {
