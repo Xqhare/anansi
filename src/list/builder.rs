@@ -16,8 +16,8 @@ pub fn deserialise_list<P: Into<PathBuf>, S: AsRef<str>>(path: P, contents: S) -
     let mut open_tasks: Vec<Task> = Vec::new();
     let mut done_tasks: Vec<Task> = Vec::new();
 
-    for task in contents.as_ref().lines() {
-        let task = Task::new(task);
+    for (id, task) in contents.as_ref().lines().enumerate() {
+        let task = Task::new(task, id);
         if task.is_done() {
             done_tasks.push(task);
         } else {

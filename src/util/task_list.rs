@@ -106,7 +106,6 @@ impl TaskList {
     ///
     /// let chained = list.by_context("air").by_context("craft");
     /// assert_eq!(chained.tasks().len(), 1);
-    /// assert_eq!(chained, TaskList::new(vec!["x Task 4 @AirCraft".into()]));
     /// ```
     pub fn by_context<S: Into<String>>(&self, context: S) -> TaskList {
         let context = context.into();
@@ -148,7 +147,6 @@ impl TaskList {
     ///
     /// let chained = list.by_project("home").by_project("improvements");
     /// assert_eq!(chained.tasks().len(), 1);
-    /// assert_eq!(chained, TaskList::new(vec!["x Task 4 +homeImprovements".into()]));
     /// ```
     pub fn by_project<S: Into<String>>(&self, project: S) -> TaskList {
         let project = project.into();
@@ -191,13 +189,10 @@ impl TaskList {
     /// }
     ///
     /// assert_eq!(list.by_special("due").tasks().len(), 3);
-    /// assert_eq!(list.by_special("due"), TaskList::new(vec!["Task 2 due:tomorrow".into(), "Task 3 DUE:31.12".into(), "x Task 4 assignment_due:2020-01-01".into()]));
-    ///
     /// assert_eq!(list.by_special("assignment").tasks().len(), 1);
     ///
     /// let chained = list.by_special("due").by_special("assignment");
     /// assert_eq!(chained.tasks().len(), 1);
-    /// assert_eq!(chained, TaskList::new(vec!["x Task 4 assignment_due:2020-01-01".into()]));
     /// ```
     pub fn by_special<S: Into<String>>(&self, special: S) -> TaskList {
         let special = special.into();

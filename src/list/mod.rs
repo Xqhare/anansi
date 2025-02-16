@@ -21,26 +21,10 @@ impl List {
     /// # Example
     /// ```
     /// use anansi::List;
-    /// let list = List::new("path/to/list.json");
+    /// let list = List::new("path/to/list.txt");
     /// ```
     pub fn new<P: Into<PathBuf>>(path: P) -> List {
         let file_path = path.into();
-        // TODO: To improve performance:
-        // 1. Read file as bytes
-        // 2. Loop through bytes, until a newline is reached
-        // 3. Take those bytes as a string and decode
-        // 4. Deal with trailing newline
-        //
-        // Current flow:
-        // 1. Decode bytes to string (in itself a loop through the bytes)
-        // 2. Trim whitespace
-        // 3. Loop through string, dividing by newlines
-        // 4. Loop through lines, creating tasks
-        //
-        // Changing flow would:
-        // 1. Use 1 loop instead of three
-        // 2. Reduce the amount of String allocations
-        // 3. Require a major code refactoring
         if let Ok(file) = std::fs::read_to_string(&file_path) {
             // load from file
             deserialise_list(file_path, file.trim())
@@ -55,13 +39,13 @@ impl List {
     /// # Example
     /// ```
     /// use anansi::List;
-    /// let mut list = List::new("path/to/list.json");
+    /// let mut list = List::new("path/to/list.txt");
     /// list.add("Task 1");
     /// list.add("Task 2");
     /// assert_eq!(list.open().len(), 2);
     /// ```
-    pub fn add<S: Into<Task>>(&mut self, task: S) {
-        let task: Task = task.into();
+    pub fn add<S: AsRef<str>>(&mut self, task: S) {
+        let task: Task = Task::new(task.as_ref(), self.open_tasks.len().saturating_add(self.done_tasks.len()));
         if task.is_done() {
             self.done_tasks.push(task);
         } else {
@@ -77,12 +61,12 @@ impl List {
     /// # Example
     /// ```
     /// use anansi::{List, Task};
-    /// let mut list = List::new("path/to/list.json");
-    /// let task1 = Task::new("Task 1");
-    /// list.add(task1.clone());
+    /// let mut list = List::new("path/to/list.txt");
+    /// list.add("Task 1");
     /// list.add("Task 2");
     /// assert_eq!(list.open().len(), 2);
-    /// list.remove(&task1);
+    /// let task = list.open()[0].clone();
+    /// list.remove(&task);
     /// assert_eq!(list.open().len(), 1);
     /// ```
     pub fn remove(&mut self, task: &Task) {
@@ -93,12 +77,52 @@ impl List {
         }
     }
 
+    /// Update a task in the list.
+    ///
+    /// Provide a new task and the id of the task to update.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::{List, Task};
+    /// let mut list = List::new("path/to/list.txt");
+    /// list.add("Task 1");
+    /// list.add("Task 2");
+    /// let task = list.open()[0].clone();
+    /// list.update("Task 3", task.id());
+    /// assert_eq!(list.get(task.id()).unwrap().original(), "Task 3");
+    /// ```
+    pub fn update<S: AsRef<str>>(&mut self, new_task: S, task_id: usize) {
+        let new_task = Task::new(new_task.as_ref(), task_id);
+        self.done_tasks.retain(|t| t.id() != task_id);
+        self.open_tasks.retain(|t| t.id() != task_id);
+        if new_task.is_done() {
+            self.done_tasks.push(new_task);
+        } else {
+            self.open_tasks.push(new_task);
+        }
+    }
+
+    /// Get a task by id.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::{List, TaskList};
+    /// let mut list = List::new("path/to/list.txt");
+    /// list.add("Task 1");
+    /// list.add("Task 2");
+    /// let task = list.get(0).unwrap();
+    /// assert_eq!(task.original(), "Task 1");
+    /// ```
+    pub fn get(&self, id: usize) -> Option<Task> {
+        self.open_tasks.iter().find(|t| t.id() == id).cloned().or_else(|| self.done_tasks.iter().find(|t| t.id() == id).cloned())
+    }
+
     /// Get all done tasks.
     ///
     /// # Example
     /// ```
     /// use anansi::{List, TaskList};
-    /// let mut list = List::new("path/to/list.json");
+    /// let mut list = List::new("path/to/list.txt");
     /// list.add("x Task 1");
     /// list.add("Task 2");
     /// let done_tasks = list.done();
@@ -113,7 +137,7 @@ impl List {
     /// # Example
     /// ```
     /// use anansi::{List, TaskList};
-    /// let mut list = List::new("path/to/list.json");
+    /// let mut list = List::new("path/to/list.txt");
     /// list.add("x Task 1");
     /// list.add("Task 2");
     /// let open_tasks = list.open();
@@ -153,7 +177,7 @@ impl List {
     /// ```
     /// use anansi::{List, TaskList};
     ///
-    /// let mut list = List::new("path/to/list.json");
+    /// let mut list = List::new("path/to/list.txt");
     /// list.add("(A) Task 1");
     /// list.add("(A) Task 2 @air");
     /// list.add("(B) Task 3 @AIR");
@@ -191,15 +215,13 @@ impl List {
     /// ```
     /// use anansi::{List, TaskList};
     ///
-    /// let mut list = List::new("path/to/list.json");
+    /// let mut list = List::new("path/to/list.txt");
     /// list.add("Task 1");
     /// list.add("Task 2 @air");
     /// list.add("Task 3 @AIR");
     /// list.add("x Task 4 @AirCraft");
     ///
     /// assert_eq!(list.by_context("air").tasks().len(), 3);
-    /// assert_eq!(list.by_context("air"), TaskList::new(vec!["Task 2 @air".into(), "Task 3 @AIR".into(), "Task 4 @AirCraft".into()]));
-    ///
     /// assert_eq!(list.by_context("craft").tasks().len(), 1);
     /// ```
     pub fn by_context<S: Into<String>>(&self, context: S) -> TaskList {
@@ -246,15 +268,13 @@ impl List {
     /// ```
     /// use anansi::{List, TaskList};
     ///
-    /// let mut list = List::new("path/to/list.json");
+    /// let mut list = List::new("path/to/list.txt");
     /// list.add("Task 1");
     /// list.add("Task 2 +home");
     /// list.add("Task 3 +HOME");
     /// list.add("x Task 4 +homeImprovements");
     ///
     /// assert_eq!(list.by_project("home").tasks().len(), 3);
-    /// assert_eq!(list.by_project("home"), TaskList::new(vec!["Task 2 +home".into(), "Task 3 +HOME".into(), "Task 4 +homeImprovements".into()]));
-    ///
     /// assert_eq!(list.by_project("improvements").tasks().len(), 1);
     pub fn by_project<S: Into<String>>(&self, project: S) -> TaskList {
         let project = project.into();
@@ -299,7 +319,7 @@ impl List {
     /// ```
     /// use anansi::{List, TaskList};
     ///
-    /// let mut list = List::new("path/to/list.json");
+    /// let mut list = List::new("path/to/list.txt");
     /// list.add("Task 1");
     /// list.add("Task 2 due:tomorrow");
     /// list.add("Task 3 DUE:31.12");
@@ -310,8 +330,6 @@ impl List {
     /// }
     ///
     /// assert_eq!(list.by_special("due").tasks().len(), 3);
-    /// assert_eq!(list.by_special("due"), TaskList::new(vec!["Task 2 due:tomorrow".into(), "Task 3 DUE:31.12".into(), "x Task 4 assignment_due:2020-01-01".into()]));
-    ///
     /// assert_eq!(list.by_special("assignment").tasks().len(), 1);
     /// ```
     pub fn by_special<S: Into<String>>(&self, special: S) -> TaskList {

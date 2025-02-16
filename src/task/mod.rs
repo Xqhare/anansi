@@ -25,7 +25,7 @@ use crate::Date;
 /// ```
 /// use anansi::Task;
 ///
-/// let task1 = Task::new("(A) test");
+/// let task1 = Task::new("(A) test", 0);
 /// assert_eq!(task1.is_done(), false);
 /// assert_eq!(task1.prio(), "A");
 /// assert_eq!(task1.completion_date(), "");
@@ -37,9 +37,9 @@ use crate::Date;
 /// assert!(task1.specials().is_empty());
 /// assert_eq!(task1.original(), "(A) test");
 ///
-/// let task2 = Task::new("(B) test");
-/// let task3 = Task::new("(Z) test");
-/// let task4 = Task::new("(A) test 2");
+/// let task2 = Task::new("(B) test", 0);
+/// let task3 = Task::new("(Z) test", 0);
+/// let task4 = Task::new("(A) test 2", 0);
 /// assert!(task4 > task2);
 /// assert!(task2 > task3 && task4 > task2);
 /// assert!(task1 >= task4);
@@ -48,6 +48,7 @@ use crate::Date;
 /// ```
 #[derive(Debug, Clone)]
 pub struct Task {
+    id: usize,
     // storing this boolean saves loading the original text and checking if it starts with 'x'
     done: bool,
     // takes up max 4 bytes, no reason to optimise into a u8
@@ -105,15 +106,21 @@ impl Task {
     /// Creates a new task from the given text.
     ///
     /// Input will be deserialised according to the 'todo.txt' format.
-    pub fn new<S: AsRef<str>>(text: S) -> Task {
-        deserialize_task(text)
+    ///
+    /// Also needs an id of type `usize`.
+    /// To add a Task to a TaskList, please use `TaskList::add()` instead.
+    /// To update a Task inside a TaskList, please use `TaskList::update()` instead.
+    ///
+    /// Do not use this constructor directly if you want to add a task to a TaskList.
+    pub fn new<S: AsRef<str>>(text: S, id: usize) -> Task {
+        deserialize_task(text, id)
     }
 
     /// Updates the task with the given text.
     ///
     /// Input will be deserialised according to the 'todo.txt' format.
     pub fn update<S: AsRef<str>>(&mut self, text: S) {
-        let new_task = deserialize_task(text);
+        let new_task = deserialize_task(text, self.id);
         self.done = new_task.done;
         self.priority = new_task.priority;
         self.completion_date = new_task.completion_date;
@@ -128,6 +135,11 @@ impl Task {
     /// Returns `true` if the task is done.
     pub fn is_done(&self) -> bool {
         self.done
+    }
+
+    /// Returns the id of the task.
+    pub fn id(&self) -> usize {
+        self.id
     }
 
     /// Marks the task as done.
@@ -147,7 +159,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let mut task = anansi::Task::new("(A) 2022-01-01 test");
+    /// let mut task = anansi::Task::new("(A) 2022-01-01 test", 0);
     /// assert_eq!(task.is_done(), false);
     /// assert_eq!(task.inception_date(), "2022-01-01");
     /// task.done(Some("2022-11-11".into()));
@@ -180,7 +192,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let mut task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test");
+    /// let mut task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
     /// assert_eq!(task.is_done(), true);
     /// assert_eq!(task.completion_date(), "2022-11-11");
     /// task.undone();
@@ -209,7 +221,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("(A) test");
+    /// let task = anansi::Task::new("(A) test", 0);
     /// assert_eq!(task.prio(), "A");
     /// ```
     pub fn prio(&self) -> String {
@@ -227,7 +239,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("(A) test @air @home");
+    /// let task = anansi::Task::new("(A) test @air @home", 0);
     /// assert_eq!(task.contexts(), &vec!["air", "home"]);
     /// ```
     pub fn contexts(&self) -> &Vec<String> {
@@ -241,7 +253,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("(A) test +air +home");
+    /// let task = anansi::Task::new("(A) test +air +home", 0);
     /// assert_eq!(task.projects(), &vec!["air", "home"]);
     /// ```
     pub fn projects(&self) -> &Vec<String> {
@@ -255,7 +267,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("(A) test due:tomorrow");
+    /// let task = anansi::Task::new("(A) test due:tomorrow", 0);
     /// assert_eq!(task.specials().get("due").unwrap(), "tomorrow");
     /// ```
     pub fn specials(&self) -> &BTreeMap<String, String> {
@@ -271,7 +283,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test");
+    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
     /// assert_eq!(task.completion_date(), "2022-11-11");
     /// ```
     pub fn completion_date(&self) -> String {
@@ -287,7 +299,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test");
+    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
     /// assert_eq!(task.inception_date(), "2022-01-01");
     /// ```
     pub fn inception_date(&self) -> String {
@@ -302,7 +314,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val");
+    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val", 0);
     /// assert_eq!(task.text(), "test +proj @cont key:val");
     /// ```
     pub fn text(&self) -> &String {
@@ -317,7 +329,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val");
+    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val", 0);
     /// assert_eq!(task.description(), "test");
     /// ```
     pub fn description(&self) -> &String {
@@ -332,7 +344,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     /// 
-    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val");
+    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val", 0);
     /// assert_eq!(task.original(), "x (A) 2022-11-11 2022-01-01 test +proj @cont key:val");
     /// ```
     pub fn original(&self) -> &String {
@@ -349,9 +361,9 @@ impl std::fmt::Display for Task {
     }
 }
 
-impl From<&str> for Task {
-    fn from(text: &str) -> Self {
-        deserialize_task(text)
+impl From<(&str, usize)> for Task {
+    fn from(value: (&str, usize)) -> Self {
+        Task::new(value.0, value.1)
     }
 }
 
