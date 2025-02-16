@@ -4,7 +4,7 @@ use crate::{util::deserialise_date, Date};
 
 use super::Task;
 
-pub fn deserialize_task<S: AsRef<str>>(input: S) -> Task {
+pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
     let mut tokens: VecDeque<&str> = input.as_ref().split_whitespace().collect();
     let original_text = tokens.clone().into_iter().collect::<Vec<&str>>().join(" ");
 
@@ -80,6 +80,7 @@ pub fn deserialize_task<S: AsRef<str>>(input: S) -> Task {
     }
 
     Task {
+        id,
         done,
         priority,
         completion_date,
