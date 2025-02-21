@@ -6,14 +6,27 @@ use builder::{build_default_list, deserialise_list, serialise_list};
 
 use crate::{Task, TaskList};
 
+type TaskID = usize;
+
 #[derive(Clone)]
 pub struct List {
     file_path: PathBuf,
-    open_tasks: Vec<Task>,
-    done_tasks: Vec<Task>,
+    tasks: Vec<Task>,
+    open_tasks: Vec<TaskID>,
+    done_tasks: Vec<TaskID>,
 }
 
 impl List {
+    /// Checks if a task with the given id exists in the list.
+    fn is_id_used(&self, id: TaskID) -> bool {
+        self.tasks.iter().any(|task| task.id() == id)
+    }
+
+    /// Returns the highest id used in the list or `None` if the list is empty.
+    fn max_id(&self) -> Option<TaskID> {
+        self.tasks.iter().map(|task| task.id()).max()
+    }
+
     /// Create a new list.
     /// If the supplied path exists, load the file and deserialize.
     /// If the supplied path does not exist, create a new, empty list.
