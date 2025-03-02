@@ -116,7 +116,7 @@ impl Task {
         deserialize_task(text, id)
     }
 
-    /// Updates the task with the given text.
+    /* /// Updates the task with the given text.
     ///
     /// Input will be deserialised according to the 'todo.txt' format.
     pub fn update<S: AsRef<str>>(&mut self, text: S) {
@@ -130,7 +130,7 @@ impl Task {
         self.project_tags = new_task.project_tags;
         self.special_tags = new_task.special_tags;
         self.original_text = new_task.original_text;
-    }
+    } */
 
     /// Returns `true` if the task is done.
     pub fn is_done(&self) -> bool {
@@ -142,7 +142,7 @@ impl Task {
         self.id
     }
 
-    /// Marks the task as done.
+    /* /// Marks the task as done.
     ///
     /// If a completion date is given, it will be stored in the task.
     /// 
@@ -181,9 +181,9 @@ impl Task {
                 self.original_text = format!("x ({}) {}", self.prio(), self.text);
             }
         }
-    }
+    } */
 
-    /// Marks the task as undone.
+    /* /// Marks the task as undone.
     ///
     /// If a task has already been marked as undone, nothing will happen.
     ///
@@ -210,7 +210,7 @@ impl Task {
                 self.original_text = self.original_text.replacen("x ", "", 1);
             }
         }
-    }
+    } */
 
     /// Returns the priority of the task.
     ///
