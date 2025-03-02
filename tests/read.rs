@@ -7,15 +7,15 @@ fn basic_todo() {
     assert_eq!(list.open().len(), 5);
     assert_eq!(list.done().len(), 4);
 
-    assert_eq!(list.by_prio("A").tasks(), 2);
-    assert_eq!(list.by_prio("b").tasks(), 1);
+    assert_eq!(list.by_prio("A").tasks().len(), 2);
+    assert_eq!(list.by_prio("b").tasks().len(), 1);
 
-    assert_eq!(list.by_project("project1").tasks(), 6);
-    assert_eq!(list.by_context("context2").tasks(), 4);
-    assert_eq!(list.by_special("keyword").tasks(), 1);
+    assert_eq!(list.by_project("project1").tasks().len(), 6);
+    assert_eq!(list.by_context("context2").tasks().len(), 4);
+    assert_eq!(list.by_special("keyword").tasks().len(), 1);
 
-    assert_eq!(list.by_project("project1").by_context("context3").tasks(), 3);
-    assert_eq!(list.by_project("project1").by_context("context3").by_special("keyword").tasks(), 1);
+    assert_eq!(list.by_project("project1").by_context("context3").tasks().len(), 3);
+    assert_eq!(list.by_project("project1").by_context("context3").by_special("keyword").tasks().len(), 1);
 
     let complete_task = list.by_project("project1").by_context("context3").by_special("keyword").done()[0].clone();
     assert_eq!(complete_task.is_done(), true);

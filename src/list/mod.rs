@@ -158,8 +158,12 @@ impl List {
         boxed_task.map(|boxed_task| *boxed_task)
     }
 
-    pub fn tasks(&self) -> usize {
-        self.tasks.len()
+    pub fn tasks(&self) -> Vec<Task> {
+        let mut out = Vec::new();
+        for task in self.tasks.values() {
+            out.push(*task.clone());
+        }
+        out
     }
 
     /// Get all done tasks.
@@ -279,7 +283,7 @@ impl List {
         let mut filtered = Vec::new();
         for task in self.tasks.values() {
             for tag in task.contexts() {
-                if tag.contains(&context) {
+                if tag.to_lowercase().contains(&context.to_lowercase()) {
                     filtered.push(*task.clone());
                     break
                 }
@@ -320,7 +324,7 @@ impl List {
         let mut filtered = Vec::new();
         for task in self.tasks.values() {
             for tag in task.projects() {
-                if tag.contains(&project) {
+                if tag.to_lowercase().contains(&project.to_lowercase()) {
                     filtered.push(*task.clone());
                     break
                 }
@@ -365,7 +369,7 @@ impl List {
         let mut filtered = Vec::new();
         for task in self.tasks.values() {
             for key in task.specials().keys() {
-                if key.contains(&special) {
+                if key.to_lowercase().contains(&special.to_lowercase()) {
                     filtered.push(*task.clone());
                     break
                 }
