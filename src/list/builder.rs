@@ -1,18 +1,18 @@
-use std::path::PathBuf;
+use std::{collections::BTreeMap, path::PathBuf};
 
 use super::{TaskID, List, Task};
 
 pub fn build_default_list<P: Into<PathBuf>>(path: P) -> List {
     List {
         file_path: path.into(),
-        tasks: Vec::new(),
+        tasks: BTreeMap::new(),
         open_tasks: Vec::new(),
         done_tasks: Vec::new(),
     }
 }
 
 pub fn deserialise_list<P: Into<PathBuf>, S: AsRef<str>>(path: P, contents: S) -> List {
-    let mut tasks: Vec<Task> = Vec::new();
+    let mut tasks: BTreeMap<TaskID, Box<Task>> = BTreeMap::new();
     let mut open_tasks: Vec<TaskID> = Vec::new();
     let mut done_tasks: Vec<TaskID> = Vec::new();
 
@@ -23,7 +23,7 @@ pub fn deserialise_list<P: Into<PathBuf>, S: AsRef<str>>(path: P, contents: S) -
         } else {
             open_tasks.push(id);
         }
-        tasks.push(task);
+        tasks.insert(id, Box::new(task));
     }
 
     List {
@@ -36,7 +36,7 @@ pub fn deserialise_list<P: Into<PathBuf>, S: AsRef<str>>(path: P, contents: S) -
 
 pub fn serialise_list(list: &List) -> String {
     let mut output = String::new();
-    for task in &list.tasks {
+    for (_, task) in list.tasks.iter() {
         output.push_str(&task.original());
         output.push('\n');
     }
