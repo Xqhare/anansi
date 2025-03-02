@@ -1,17 +1,17 @@
 mod builder;
 
-use std::path::PathBuf;
+use std::{collections::BTreeMap, path::PathBuf};
 
 use builder::{build_default_list, deserialise_list, serialise_list};
 
-use crate::{Task, TaskList};
+use crate::{error::AnansiError, Task};
 
 type TaskID = usize;
 
 #[derive(Clone)]
 pub struct List {
     file_path: PathBuf,
-    tasks: Vec<Task>,
+    tasks: BTreeMap<TaskID, Box<Task>>,
     open_tasks: Vec<TaskID>,
     done_tasks: Vec<TaskID>,
 }
@@ -19,12 +19,39 @@ pub struct List {
 impl List {
     /// Checks if a task with the given id exists in the list.
     fn is_id_used(&self, id: TaskID) -> bool {
-        self.tasks.iter().any(|task| task.id() == id)
+        self.tasks.contains_key(&id)
     }
 
     /// Returns the highest id used in the list or `None` if the list is empty.
     fn max_id(&self) -> Option<TaskID> {
-        self.tasks.iter().map(|task| task.id()).max()
+        self.tasks.keys().max().copied()
+    }
+
+    /// Add a task to the list.
+    ///
+    /// # Returns
+    /// Returns an error if the task id is already used.
+    fn push_task(&mut self, task: Task) -> Result<(), AnansiError> {
+        if !self.is_id_used(task.id()) {
+            if task.is_done() {
+                self.done_tasks.push(task.id());
+            } else {
+                self.open_tasks.push(task.id());
+            }
+            self.tasks.insert(task.id(), Box::new(task));
+            Ok(())
+        } else {
+            return Err(AnansiError { title: "Invalid ID".to_string(), message: format!("Task with ID {} already exists", task.id()) });
+        }
+    }
+
+    fn new_empty_with_path<P: Into<PathBuf>>(path: P) -> List {
+        List {
+            file_path: path.into(),
+            tasks: BTreeMap::new(),
+            open_tasks: Vec::new(),
+            done_tasks: Vec::new(),
+        }
     }
 
     /// Create a new list.
@@ -58,18 +85,20 @@ impl List {
     /// assert_eq!(list.open().len(), 2);
     /// ```
     pub fn add<S: AsRef<str>>(&mut self, task: S) {
-        let task: Task = Task::new(task.as_ref(), self.open_tasks.len().saturating_add(self.done_tasks.len()));
+        let id = if let Some(id) = self.max_id() { id + 1 } else { 0 };
+        let task: Task = Task::new(task.as_ref(), id);
         if task.is_done() {
-            self.done_tasks.push(task);
+            self.done_tasks.push(id);
         } else {
-            self.open_tasks.push(task);
+            self.open_tasks.push(id);
         }
+        self.tasks.insert(id, Box::new(task));
     }
 
     // TODO: Optimise this - maybe don't load all tasks into memory, don't have a better idea though
     /// Remove a task from the list, done or open.
     ///
-    /// Provide a `&Task` to remove.
+    /// Provide a `TaskID` to remove.
     ///
     /// # Example
     /// ```
@@ -79,15 +108,14 @@ impl List {
     /// list.add("Task 2");
     /// assert_eq!(list.open().len(), 2);
     /// let task = list.open()[0].clone();
-    /// list.remove(&task);
+    /// list.remove(task.id());
     /// assert_eq!(list.open().len(), 1);
     /// ```
-    pub fn remove(&mut self, task: &Task) {
-        if task.is_done() {
-            self.done_tasks.retain(|t| t.original() != task.original());
-        } else {
-            self.open_tasks.retain(|t| t.original() != task.original());
-        }
+    pub fn remove<ID: Into<TaskID>>(&mut self, task_id: ID) {
+        let id = task_id.into();
+        self.done_tasks.retain(|t| *t != id);
+        self.open_tasks.retain(|t| *t != id);
+        self.tasks.remove(&id);
     }
 
     /// Update a task in the list.
@@ -104,15 +132,14 @@ impl List {
     /// list.update("Task 3", task.id());
     /// assert_eq!(list.get(task.id()).unwrap().original(), "Task 3");
     /// ```
-    pub fn update<S: AsRef<str>>(&mut self, new_task: S, task_id: usize) {
-        let new_task = Task::new(new_task.as_ref(), task_id);
-        self.done_tasks.retain(|t| t.id() != task_id);
-        self.open_tasks.retain(|t| t.id() != task_id);
-        if new_task.is_done() {
-            self.done_tasks.push(new_task);
-        } else {
-            self.open_tasks.push(new_task);
+    pub fn update<S: AsRef<str>>(&mut self, new_task: S, task_id: TaskID) -> Result<(), AnansiError> {
+        if !self.is_id_used(task_id) {
+            return Err(AnansiError { title: "Invalid ID".to_string(), message: format!("Task with ID {} does not exist", task_id) });
         }
+        self.open_tasks.retain(|t| *t != task_id);
+        self.done_tasks.retain(|t| *t != task_id);
+        self.tasks.insert(task_id, Box::new(Task::new(new_task.as_ref(), task_id)));
+        Ok(())
     }
 
     /// Get a task by id.
@@ -126,8 +153,13 @@ impl List {
     /// let task = list.get(0).unwrap();
     /// assert_eq!(task.original(), "Task 1");
     /// ```
-    pub fn get(&self, id: usize) -> Option<Task> {
-        self.open_tasks.iter().find(|t| t.id() == id).cloned().or_else(|| self.done_tasks.iter().find(|t| t.id() == id).cloned())
+    pub fn get(&self, id: TaskID) -> Option<Task> {
+        let boxed_task = self.tasks.get(&id).cloned();
+        boxed_task.map(|boxed_task| *boxed_task)
+    }
+
+    pub fn tasks(&self) -> usize {
+        self.tasks.len()
     }
 
     /// Get all done tasks.
@@ -141,8 +173,8 @@ impl List {
     /// let done_tasks = list.done();
     /// assert_eq!(done_tasks.len(), 1);
     /// ```
-    pub fn done(&self) -> &Vec<Task> {
-        &self.done_tasks
+    pub fn done(&self) -> Vec<Task> {
+        self.done_tasks.iter().map(|id| self.get(*id).unwrap()).collect()
     }
 
     /// Get all open tasks.
@@ -156,8 +188,8 @@ impl List {
     /// let open_tasks = list.open();
     /// assert_eq!(open_tasks.len(), 1);
     /// ```
-    pub fn open(&self) -> &Vec<Task> {
-        &self.open_tasks
+    pub fn open(&self) -> Vec<Task> {
+        self.open_tasks.iter().map(|id| self.get(*id).unwrap()).collect()
     }
 
     /// Save the list to the file.
@@ -198,20 +230,25 @@ impl List {
     /// let filtered = list.by_prio("a");
     /// assert_eq!(filtered.tasks().len(), 2);
     /// ```
-    pub fn by_prio<S: Into<String>>(&self, prio: S) -> TaskList {
+    pub fn by_prio<S: Into<String>>(&self, prio: S) -> List {
         let prio = prio.into().to_uppercase();
-        let mut open_filtered: Vec<Task> = self.open_tasks
-            .iter()
-            .filter(|task| task.prio() == prio)
-            .cloned()
-            .collect();
-        let mut done_filtered: Vec<Task> = self.done_tasks
-            .iter()
-            .filter(|task| task.prio() == prio)
-            .cloned()
-            .collect();
-        open_filtered.append(&mut done_filtered);
-        TaskList::new(open_filtered)
+        let mut filtered = Vec::new();
+        for task in self.tasks.values() {
+            if task.prio() == prio {
+                filtered.push(*task.clone());
+            }
+        }
+        let mut filtered_list = List::new_empty_with_path(self.file_path.clone());
+        println!("{:?}", filtered);
+        println!("filtered len {:?}", filtered.len());
+        println!("{:?}", filtered_list.tasks.len());
+        for task in filtered {
+            println!("{:?}", task.id());
+            let pos_err = filtered_list.push_task(task);
+            println!("{:?}", pos_err);
+            debug_assert!(pos_err.is_ok());
+        }
+        filtered_list
     }
 
     /// Filter tasks by context.
@@ -237,35 +274,24 @@ impl List {
     /// assert_eq!(list.by_context("air").tasks().len(), 3);
     /// assert_eq!(list.by_context("craft").tasks().len(), 1);
     /// ```
-    pub fn by_context<S: Into<String>>(&self, context: S) -> TaskList {
+    pub fn by_context<S: Into<String>>(&self, context: S) -> List {
         let context = context.into();
-        let mut open_filtered: Vec<Task> = self.open_tasks
-            .iter()
-            .filter(|task| {
-                for tag in task.contexts() {
-                    if tag.to_lowercase().contains(&context.to_lowercase()) {
-                        return true;
-                    }
+        let mut filtered = Vec::new();
+        for task in self.tasks.values() {
+            for tag in task.contexts() {
+                if tag.contains(&context) {
+                    filtered.push(*task.clone());
+                    break
                 }
-                return false;
-            })
-            .cloned()
-            .collect();
-        let mut done_filtered: Vec<Task> = self.done_tasks
-            .iter()
-            .filter(|task| {
-                for tag in task.contexts() {
-                    if tag.to_lowercase().contains(&context.to_lowercase()) {
-                        return true;
-                    }
-                }
-                return false;
-            })
-            .cloned()
-            .collect();
-        open_filtered.append(&mut done_filtered);
-        TaskList::new(open_filtered)
-    }
+            }
+        }
+        let mut filtered_list = List::new_empty_with_path(self.file_path.clone());
+        for task in filtered {
+            let pos_err = filtered_list.push_task(task);
+            debug_assert!(pos_err.is_ok());
+        }
+        filtered_list
+       }
 
     /// Filter tasks by project.
     ///
@@ -289,34 +315,23 @@ impl List {
     ///
     /// assert_eq!(list.by_project("home").tasks().len(), 3);
     /// assert_eq!(list.by_project("improvements").tasks().len(), 1);
-    pub fn by_project<S: Into<String>>(&self, project: S) -> TaskList {
+    pub fn by_project<S: Into<String>>(&self, project: S) -> List {
         let project = project.into();
-        let mut open_filtered: Vec<Task> = self.open_tasks
-            .iter()
-            .filter(|task| {
-                for tag in task.projects() {
-                    if tag.to_lowercase().contains(&project.to_lowercase()) {
-                        return true;
-                    }
+        let mut filtered = Vec::new();
+        for task in self.tasks.values() {
+            for tag in task.projects() {
+                if tag.contains(&project) {
+                    filtered.push(*task.clone());
+                    break
                 }
-                return false;
-            })
-            .cloned()
-            .collect();
-        let mut done_filtered: Vec<Task> = self.done_tasks
-            .iter()
-            .filter(|task| {
-                for tag in task.projects() {
-                    if tag.to_lowercase().contains(&project.to_lowercase()) {
-                        return true;
-                    }
-                }
-                return false;
-            })
-            .cloned()
-            .collect();
-        open_filtered.append(&mut done_filtered);
-        TaskList::new(open_filtered)
+            }
+        }
+        let mut filtered_list = List::new_empty_with_path(self.file_path.clone());
+        for task in filtered {
+            let pos_err = filtered_list.push_task(task);
+            debug_assert!(pos_err.is_ok());
+        }
+        filtered_list
     }
 
     /// Filter tasks by special tag.
@@ -345,33 +360,22 @@ impl List {
     /// assert_eq!(list.by_special("due").tasks().len(), 3);
     /// assert_eq!(list.by_special("assignment").tasks().len(), 1);
     /// ```
-    pub fn by_special<S: Into<String>>(&self, special: S) -> TaskList {
+    pub fn by_special<S: Into<String>>(&self, special: S) -> List {
         let special = special.into();
-        let mut open_filtered: Vec<Task> = self.open_tasks
-            .iter()
-            .filter(|task| {
-                for key in task.specials().keys() {
-                    if key.to_lowercase().contains(&special.to_lowercase()) {
-                        return true;
-                    }
+        let mut filtered = Vec::new();
+        for task in self.tasks.values() {
+            for key in task.specials().keys() {
+                if key.contains(&special) {
+                    filtered.push(*task.clone());
+                    break
                 }
-                return false;
-            })
-            .cloned()
-            .collect();
-        let mut done_filtered: Vec<Task> = self.done_tasks
-            .iter()
-            .filter(|task| {
-                for key in task.specials().keys() {
-                    if key.to_lowercase().contains(&special.to_lowercase()) {
-                        return true;
-                    }
-                }
-                return false;
-            })
-            .cloned()
-            .collect();
-        open_filtered.append(&mut done_filtered);
-        TaskList::new(open_filtered)
+            }
+        }
+        let mut filtered_list = List::new_empty_with_path(self.file_path.clone());
+        for task in filtered {
+            let pos_err = filtered_list.push_task(task);
+            debug_assert!(pos_err.is_ok());
+        }
+        filtered_list
     }
 }
