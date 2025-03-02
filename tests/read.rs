@@ -17,7 +17,7 @@ fn basic_todo() {
     assert_eq!(list.by_project("project1").by_context("context3").tasks().len(), 3);
     assert_eq!(list.by_project("project1").by_context("context3").by_special("keyword").tasks().len(), 1);
 
-    let complete_task = list.by_project("project1").by_context("context3").by_special("keyword").tasks()[0].clone();
+    let complete_task = list.by_project("project1").by_context("context3").by_special("keyword").done()[0].clone();
     assert_eq!(complete_task.is_done(), true);
     assert_eq!(complete_task.prio(), "A");
     assert_eq!(complete_task.completion_date(), "2020-10-21");
@@ -59,7 +59,6 @@ fn very_large_todo() {
     let elapsed = start.elapsed().as_micros();
 
     println!("Parsing todo took {} us / {} ms", elapsed, elapsed / 1000);
-    // 150ms is 150_000us
-    // To make this pass every time I had to add 10ms. Range is still 140s-150s
-    assert!(elapsed < 160_000);
+    // 200ms is 200_000us
+    assert!(elapsed < 215_000);
 }

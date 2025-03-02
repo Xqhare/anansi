@@ -37,6 +37,9 @@ fn write_read_all() {
         list.add(input);
     }
 
+    assert_eq!(list.open().len(), 10);
+    assert_eq!(list.done().len(), 5);
+
     let save = list.save();
     assert!(save.is_ok());
 
