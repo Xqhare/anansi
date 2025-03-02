@@ -146,7 +146,7 @@ impl List {
     ///
     /// # Example
     /// ```
-    /// use anansi::{List, TaskList};
+    /// use anansi::List;
     /// let mut list = List::new("path/to/list.txt");
     /// list.add("Task 1");
     /// list.add("Task 2");
@@ -170,7 +170,7 @@ impl List {
     ///
     /// # Example
     /// ```
-    /// use anansi::{List, TaskList};
+    /// use anansi::List;
     /// let mut list = List::new("path/to/list.txt");
     /// list.add("x Task 1");
     /// list.add("Task 2");
@@ -185,7 +185,7 @@ impl List {
     ///
     /// # Example
     /// ```
-    /// use anansi::{List, TaskList};
+    /// use anansi::List;
     /// let mut list = List::new("path/to/list.txt");
     /// list.add("x Task 1");
     /// list.add("Task 2");
@@ -224,7 +224,7 @@ impl List {
     ///
     /// # Example
     /// ```
-    /// use anansi::{List, TaskList};
+    /// use anansi::List;
     ///
     /// let mut list = List::new("path/to/list.txt");
     /// list.add("(A) Task 1");
@@ -267,7 +267,7 @@ impl List {
     ///
     /// # Example
     /// ```
-    /// use anansi::{List, TaskList};
+    /// use anansi::List;
     ///
     /// let mut list = List::new("path/to/list.txt");
     /// list.add("Task 1");
@@ -309,7 +309,7 @@ impl List {
     ///
     /// # Example
     /// ```
-    /// use anansi::{List, TaskList};
+    /// use anansi::List;
     ///
     /// let mut list = List::new("path/to/list.txt");
     /// list.add("Task 1");
@@ -349,7 +349,7 @@ impl List {
     ///
     /// # Example
     /// ```
-    /// use anansi::{List, TaskList};
+    /// use anansi::List;
     ///
     /// let mut list = List::new("path/to/list.txt");
     /// list.add("Task 1");
