@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 
 use builder::deserialize_task;
 
-use crate::Date;
+use crate::{error::AnansiError, Date};
 
 /// Represents a single task.
 /// A task is a single line in the todo.txt file.
@@ -142,7 +142,7 @@ impl Task {
         self.id
     }
 
-    /* /// Marks the task as done.
+    /// Marks the task as done.
     ///
     /// If a completion date is given, it will be stored in the task.
     /// 
@@ -154,63 +154,86 @@ impl Task {
     ///
     /// If a task has already been marked as done, nothing will happen.
     ///
+    /// # Arguments
+    /// 
+    /// * `completion_date` - The date the task has been completed.
+    ///
     /// # Example
     /// 
     /// ```
     /// use anansi::Task;
     /// 
-    /// let mut task = anansi::Task::new("(A) 2022-01-01 test", 0);
+    /// let task = anansi::Task::new("(A) 2022-01-01 test", 0);
     /// assert_eq!(task.is_done(), false);
     /// assert_eq!(task.inception_date(), "2022-01-01");
-    /// task.done(Some("2022-11-11".into()));
-    /// assert_eq!(task.is_done(), true);
-    /// assert_eq!(task.completion_date(), "2022-11-11");
+    /// let done = task.done(Some("2022-11-11".into())).unwrap();
+    /// assert_eq!(done.is_done(), true);
+    /// assert_eq!(done.completion_date(), "2022-11-11");
     /// ```
     ///
-    pub fn done(&mut self, completion_date: Option<Date>) {
-        if !self.done {
-            self.done = true;
-            if self.inception_date.is_set() {
+    /// ```
+    /// # use anansi::Task;
+    /// let task = anansi::Task::new("(A) 2022-01-01 test", 0);
+    /// let done = task.done(None);
+    /// assert_eq!(done.is_ok(), false);
+    /// ```
+    ///
+    pub fn done(&self, completion_date: Option<Date>) -> Result<Self, AnansiError> {
+        let mut task = self.clone();
+        if !task.done {
+            task.done = true;
+            if task.inception_date.is_set() {
                 if let Some(date) = completion_date {
-                    self.original_text = format!("x ({}) {} {} {}", self.prio(), date, self.inception_date, self.text);
-                    self.completion_date = date;
+                    task.original_text = format!("x ({}) {} {} {}", task.prio(), date, task.inception_date, task.text);
+                    task.completion_date = date;
                 } else {
-                    self.original_text = format!("x {}", self.original_text);
+                    return Err(
+                        AnansiError { 
+                            title: "Missing completion date".to_string(), 
+                            message: "If a Task has a inception date set, the standard requires a completion date to be set as well.".to_string() 
+                        });
                 }
             } else {
-                self.original_text = format!("x ({}) {}", self.prio(), self.text);
+                task.original_text = format!("x ({}) {}", task.prio(), task.text);
             }
         }
-    } */
+        Ok(task)
+    }
 
-    /* /// Marks the task as undone.
+    /// Marks the task as undone.
     ///
+    /// Will remove any inception date if there is one.
     /// If a task has already been marked as undone, nothing will happen.
+    ///
+    /// # Returns
+    /// Returns a copy of the task, which is now no longer marked as done.
     ///
     /// # Example
     /// 
     /// ```
     /// use anansi::Task;
     /// 
-    /// let mut task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
+    /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
     /// assert_eq!(task.is_done(), true);
     /// assert_eq!(task.completion_date(), "2022-11-11");
-    /// task.undone();
-    /// assert_eq!(task.is_done(), false);
-    /// assert_eq!(task.completion_date(), "");
+    /// let undone = task.undone();
+    /// assert_eq!(undone.is_done(), false);
+    /// assert_eq!(undone.completion_date(), "");
     /// ```
     ///
-    pub fn undone(&mut self) {
-        if self.done {
-            self.done = false;
-            if self.completion_date.is_set() {
-                self.completion_date = Date::default();
-                self.original_text = format!("({}) {} {}", self.prio(), self.inception_date, self.text);
+    pub fn undone(&self) -> Self {
+        let mut task = self.clone();
+        if task.done {
+            task.done = false;
+            if task.completion_date.is_set() {
+                task.completion_date = Date::default();
+                task.original_text = format!("({}) {} {}", task.prio(), task.inception_date, task.text);
             } else {
-                self.original_text = self.original_text.replacen("x ", "", 1);
+                task.original_text = task.original_text.replacen("x ", "", 1);
             }
         }
-    } */
+        task
+    }
 
     /// Returns the priority of the task.
     ///
