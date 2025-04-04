@@ -129,16 +129,16 @@ impl List {
     /// list.add("Task 1");
     /// list.add("Task 2");
     /// let task = list.open()[0].clone();
-    /// list.update("Task 3", task.id());
+    /// list.update(Task::new("Task 3", task.id()), task.id());
     /// assert_eq!(list.get(task.id()).unwrap().original(), "Task 3");
     /// ```
-    pub fn update<S: AsRef<str>>(&mut self, new_task: S, task_id: TaskID) -> Result<(), AnansiError> {
-        if !self.is_id_used(task_id) {
+    pub fn update(&mut self, new_task: Task, task_id: TaskID) -> Result<(), AnansiError> {
+        if !self.is_id_used(task_id) || new_task.id() != task_id {
             return Err(AnansiError { title: "Invalid ID".to_string(), message: format!("Task with ID {} does not exist", task_id) });
         }
         self.open_tasks.retain(|t| *t != task_id);
         self.done_tasks.retain(|t| *t != task_id);
-        self.tasks.insert(task_id, Box::new(Task::new(new_task.as_ref(), task_id)));
+        self.tasks.insert(task_id, Box::new(new_task));
         Ok(())
     }
 
@@ -243,13 +243,8 @@ impl List {
             }
         }
         let mut filtered_list = List::new_empty_with_path(self.file_path.clone());
-        println!("{:?}", filtered);
-        println!("filtered len {:?}", filtered.len());
-        println!("{:?}", filtered_list.tasks.len());
         for task in filtered {
-            println!("{:?}", task.id());
             let pos_err = filtered_list.push_task(task);
-            println!("{:?}", pos_err);
             debug_assert!(pos_err.is_ok());
         }
         filtered_list
