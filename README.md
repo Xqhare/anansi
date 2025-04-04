@@ -95,3 +95,17 @@ let task2 = Task::new("(B) Buy eggs");
 assert!(task1 > task2);
 assert!(task2 < task1);
 ```
+
+## Task equality
+Tasks are equal if they have the same text.
+
+```rust
+use anansi::Task;
+
+let task1 = Task::new("(A) Buy milk");
+let task2 = Task::new("(A) Buy milk");
+assert!(task1 == task2);
+
+let task3 = Task::new("x (A) Buy milk");
+assert!(task1 != task3);
+```
