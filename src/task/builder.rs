@@ -5,8 +5,8 @@ use crate::{util::deserialise_date, Date};
 use super::Task;
 
 pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
+    let original_text = input.as_ref().to_string();
     let mut tokens: VecDeque<&str> = input.as_ref().split_whitespace().collect();
-    let original_text = tokens.clone().into_iter().collect::<Vec<&str>>().join(" ");
 
     let done = if tokens[0] == "x" { true } else { false };
     if done {
@@ -66,7 +66,7 @@ pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
             text.push_str(token);
             text.push(' ');
             project_tags.push(token.strip_prefix('+').unwrap().to_string());
-        } else if !token.ends_with(':') && token.contains(':') && !token.contains("::") && token.len() > 2 {
+        } else if token.len() > 2 && !token.starts_with(':') && !token.ends_with(':') && token.contains(':') && !token.contains("::") {
             text.push_str(token);
             text.push(' ');
             let (key, value) = token.split_once(':').unwrap();
