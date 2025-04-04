@@ -21,6 +21,8 @@ use crate::{error::AnansiError, Date};
 /// Tasks are ordered and sorted by their priority only, with the highest priority being higher and thus bigger.
 /// So `A > B` and `B > C`, put generally `A > Z`.
 ///
+/// The equality however takes the entire task text into account.
+///
 /// # Example
 /// ```
 /// use anansi::Task;
@@ -37,14 +39,15 @@ use crate::{error::AnansiError, Date};
 /// assert!(task1.specials().is_empty());
 /// assert_eq!(task1.original(), "(A) test");
 ///
-/// let task2 = Task::new("(B) test", 0);
+/// let task2 = Task::new("x (A) test", 0);
 /// let task3 = Task::new("(Z) test", 0);
-/// let task4 = Task::new("(A) test 2", 0);
+/// let task4 = Task::new("test", 0);
+/// let task5 = Task::new("(A) test", 0);
 /// assert!(task4 > task2);
 /// assert!(task2 > task3 && task4 > task2);
-/// assert!(task1 >= task4);
+/// assert!(task1 >= task2);
 /// assert!(task4 != task2);
-/// assert!(task1 == task4);
+/// assert!(task1 == task5);
 /// ```
 #[derive(Debug, Clone)]
 pub struct Task {
@@ -55,22 +58,25 @@ pub struct Task {
     priority: Option<char>,
     completion_date: Date,
     inception_date: Date,
+    // The text of the task, with the tags but without the head (prio, dates, done)
     text: String,
+    // The description of the task, without the tags and head
     description: String,
     context_tags: Vec<String>,
     project_tags: Vec<String>,
     // storing key-value pairs for special tags
     special_tags: BTreeMap<String, String>,
+    // complete text
     original_text: String,
 }
 
 impl PartialEq for Task {
     fn eq(&self, other: &Self) -> bool {
-        self.prio() == other.prio()
+        self.original_text == other.original_text
     }
 
     fn ne(&self, other: &Self) -> bool {
-        self.prio() != other.prio()
+        self.original_text != other.original_text
     }
 }
 
