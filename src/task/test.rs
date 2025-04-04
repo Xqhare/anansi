@@ -77,7 +77,7 @@ fn date_deserialisation() {
 #[test]
 fn equality() {
     let task1 = Task::new("(A) test", 0);
-    let task2 = Task::new(" (A) test", 0);
+    let task2 = Task::new("(A) test", 0);
     assert!(task1 == task2);
     let task3 = Task::new("(B) test", 0);
     assert!(task1 != task3);
