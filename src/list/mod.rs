@@ -18,12 +18,12 @@ pub struct List {
 
 impl List {
     /// Checks if a task with the given id exists in the list.
-    fn is_id_used(&self, id: TaskID) -> bool {
+    pub fn is_id_used(&self, id: TaskID) -> bool {
         self.tasks.contains_key(&id)
     }
 
     /// Returns the highest id used in the list or `None` if the list is empty.
-    fn max_id(&self) -> Option<TaskID> {
+    pub fn max_id(&self) -> Option<TaskID> {
         self.tasks.keys().max().copied()
     }
 
