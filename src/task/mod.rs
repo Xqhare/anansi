@@ -351,7 +351,7 @@ impl Task {
     }
 
     /// Returns the description of the task.
-    /// This includes tags, but excludes dates, priority and done status.
+    /// This excludes tags, dates, priority and done status.
     ///
     /// # Example
     /// 

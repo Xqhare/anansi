@@ -324,12 +324,14 @@ impl List {
     /// list.add("(Z) Task 4 @AirCraft");
     /// let filtered = list.by_text("task");
     /// assert_eq!(filtered.tasks().len(), 4);
+    /// let filtered = list.by_text("air");
+    /// assert_eq!(filtered.tasks().len(), 0);
     /// ```
     pub fn by_text<S: Into<String>>(&self, text: S) -> List {
         let text = text.into().to_lowercase();
         let mut filtered = Vec::new();
         for task in self.tasks.values() {
-            if task.text().to_lowercase().contains(&text) {
+            if task.description().to_lowercase().contains(&text) {
                 filtered.push(*task.clone());
             }
         }
