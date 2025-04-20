@@ -306,6 +306,41 @@ impl List {
         filtered_list
     }
 
+    /// Filter tasks by text.
+    ///
+    /// Will filter both open and done tasks.
+    /// This will filter by checking if the predicate is contained within the task text.
+    ///
+    /// The filter is case insensitive.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::List;
+    ///
+    /// let mut list = List::new("path/to/list.txt");
+    /// list.add("(A) Task 1");
+    /// list.add("(A) Task 2 @air");
+    /// list.add("(B) Task 3 @AIR");
+    /// list.add("(Z) Task 4 @AirCraft");
+    /// let filtered = list.by_text("task");
+    /// assert_eq!(filtered.tasks().len(), 4);
+    /// ```
+    pub fn by_text<S: Into<String>>(&self, text: S) -> List {
+        let text = text.into().to_lowercase();
+        let mut filtered = Vec::new();
+        for task in self.tasks.values() {
+            if task.text().to_lowercase().contains(&text) {
+                filtered.push(*task.clone());
+            }
+        }
+        let mut filtered_list = List::new_empty_with_path(self.file_path.clone());
+        for task in filtered {
+            let pos_err = filtered_list.push_task(task);
+            debug_assert!(pos_err.is_ok());
+        }
+        filtered_list
+    }
+
     /// Filter tasks by context.
     ///
     /// Will filter both open and done tasks.
