@@ -1,10 +1,11 @@
 mod builder;
+mod test;
 
 use std::{collections::BTreeMap, path::PathBuf};
 
 use builder::{build_default_list, deserialise_list, serialise_list};
 
-use crate::{error::AnansiError, Task};
+use crate::{error::AnansiError, util::SortBy, Task};
 
 type TaskID = usize;
 
@@ -158,6 +159,61 @@ impl List {
         boxed_task.map(|boxed_task| *boxed_task)
     }
 
+    /// Sort tasks.
+    ///
+    /// Provide a `SortBy` to sort by.
+    /// Possible values are:
+    /// - `SortBy::Priority`
+    /// - `SortBy::InceptionDate`
+    /// - `SortBy::CompletionDate`
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::{List, SortBy};
+    /// let mut list = List::new("path/to/list.txt");
+    /// list.add("(B) Task 1");
+    /// list.add("(A) Task 2");
+    /// let sorted_tasks = list.sort(SortBy::Priority);
+    /// assert_eq!(sorted_tasks[0].original(), "(A) Task 2");
+    /// assert_eq!(sorted_tasks[1].original(), "(B) Task 1");
+    /// ```
+    pub fn sort(self, sort_by: SortBy) -> Vec<Task> {
+        match sort_by {
+            SortBy::Priority => self.sort_priority(),
+            SortBy::InceptionDate => self.sort_inception_date(),
+            SortBy::CompletionDate => self.sort_completion_date(),
+        }
+    }
+
+    fn sort_priority(self) -> Vec<Task> {
+        let mut tasks = self.tasks();
+        tasks.sort_by(|a, b| a.prio().cmp(&b.prio()));
+        tasks
+    }
+
+    fn sort_inception_date(self) -> Vec<Task> {
+        let mut tasks = self.tasks();
+        tasks.sort_by(|a, b| a.inception_date().cmp(&b.inception_date()));
+        tasks
+    }
+
+    fn sort_completion_date(self) -> Vec<Task> {
+        let mut tasks = self.tasks();
+        tasks.sort_by(|a, b| a.completion_date().cmp(&b.completion_date()));
+        tasks
+    }
+
+    /// Get all tasks.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::List;
+    /// let mut list = List::new("path/to/list.txt");
+    /// list.add("x Task 1");
+    /// list.add("Task 2");
+    /// let tasks = list.tasks();
+    /// assert_eq!(tasks.len(), 2);
+    /// ```
     pub fn tasks(&self) -> Vec<Task> {
         let mut out = Vec::new();
         for task in self.tasks.values() {

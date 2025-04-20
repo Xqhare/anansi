@@ -1,6 +1,8 @@
 mod date;
 mod test;
+mod sort_by;
 
+pub use sort_by::SortBy;
 pub use date::*;
 
 pub fn deserialise_date<S: AsRef<str>>(input: S) -> Date {
