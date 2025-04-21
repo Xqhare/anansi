@@ -5,6 +5,23 @@ use std::collections::BTreeMap;
 use crate::{Date, Task};
 
 #[test]
+fn mangled_string_old_ananke_prio_encoding() {
+    let text0 = "() 2020-12-31 test +project @context key:value";
+    let task0 = Task::new(text0, 0);
+    assert_eq!(task0.is_done(), false);
+    assert_eq!(task0.prio(), String::from(""));
+    assert_eq!(task0.inception_date(), "2020-12-31");
+    assert_eq!(task0.completion_date(), "");
+    
+    let text1 = "x () 2022-11-11 2020-12-31 test +project @context key:value";
+    let task1 = Task::new(text1, 0);
+    assert_eq!(task1.is_done(), true);
+    assert_eq!(task1.prio(), String::from(""));
+    assert_eq!(task1.inception_date(), "2020-12-31");
+    assert_eq!(task1.completion_date(), "2022-11-11");
+}
+
+#[test]
 fn basic_deserialisation() {
     let text = "x (A) test +project @context key:value";
     let task = Task::new(text, 0);

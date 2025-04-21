@@ -5,6 +5,16 @@ use crate::SortBy;
 use super::List;
 
 #[test]
+fn simple_write() {
+    let text0 = "2020-12-31 test +project @context key:value";
+    let mut task0 = List::new("no_prio.txt");
+    task0.add(text0);
+    let write = task0.save();
+    assert!(write.is_ok());
+    std::fs::remove_file("no_prio.txt").unwrap();
+}
+
+#[test]
 fn sort_by_prio_unique() {
     let mut list = List::new("prio_sorting.txt");
     list.add("(Z) Task 1");

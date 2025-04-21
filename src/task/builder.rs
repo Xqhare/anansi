@@ -21,6 +21,11 @@ pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
             } else {
                 None
             }
+        } else if tokens[0].starts_with('(') && tokens[0].ends_with(')') && tokens[0].len() == 2 {
+            // Fixes bad formatting from old ananke implementation
+            // It added `()` if no priority was set
+            let _ = tokens.pop_front();
+            None
         } else {
             None
         }
