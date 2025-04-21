@@ -1,6 +1,7 @@
 mod builder;
 mod test;
 
+use core::panic;
 use std::{collections::BTreeMap, path::PathBuf};
 
 use builder::{build_default_list, deserialise_list, serialise_list};
@@ -17,6 +18,19 @@ pub struct List {
     done_tasks: Vec<TaskID>,
 }
 
+impl From<Vec<Task>> for List {
+    fn from(tasks: Vec<Task>) -> Self {
+        let mut list = List::new_empty_with_path("");
+        for task in tasks {
+            match list.push_task(task) {
+                Ok(_) => (),
+                Err(_) => panic!("Failed to add task to list, TaskID already in use"),
+            }
+        }
+        list
+    }
+}
+
 impl List {
     /// Checks if a task with the given id exists in the list.
     pub fn is_id_used(&self, id: TaskID) -> bool {
@@ -28,11 +42,11 @@ impl List {
         self.tasks.keys().max().copied()
     }
 
-    /// Add a task to the list.
+    /// Add a task to the list. This uses the TaskID of the supplied Task.
     ///
     /// # Returns
     /// Returns an error if the task id is already used.
-    fn push_task(&mut self, task: Task) -> Result<(), AnansiError> {
+    pub fn push_task(&mut self, task: Task) -> Result<(), AnansiError> {
         if !self.is_id_used(task.id()) {
             if task.is_done() {
                 self.done_tasks.push(task.id());
