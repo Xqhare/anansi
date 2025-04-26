@@ -109,6 +109,54 @@ impl PartialOrd for Task {
 }
 
 impl Task {
+    /// Returns a mutable reference to the status of the task.
+    ///
+    /// # Example
+    /// 
+    /// ```
+    /// use anansi::Task;
+    /// 
+    /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
+    /// let status = task.mut_status();
+    /// *status = true;
+    /// assert!(task.is_done());
+    /// ```
+    pub fn mut_status(&mut self) -> &mut bool {
+        &mut self.done
+    }
+
+    /// Returns a mutable reference to the priority of the task.
+    ///
+    /// # Example
+    /// 
+    /// ```
+    /// use anansi::Task;
+    /// 
+    /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
+    /// let priority = task.mut_priority();
+    /// *priority = Some('B');
+    /// assert_eq!(task.prio(), "B");
+    /// ```
+    pub fn mut_priority(&mut self) -> &mut Option<char> {
+        &mut self.priority
+    }
+
+    /// Returns a mutable reference to the text of the task.
+    ///
+    /// # Example
+    /// 
+    /// ```
+    /// use anansi::Task;
+    /// 
+    /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
+    /// let text = task.mut_text();
+    /// *text = "new text".to_string();
+    /// assert_eq!(task.text(), "new text");
+    /// ```
+    pub fn mut_text(&mut self) -> &mut String {
+        &mut self.text
+    }
+
     /// Creates a new task from the given text.
     ///
     /// Input will be deserialised according to the 'todo.txt' format.
