@@ -2,6 +2,8 @@
 // Storing the same data as the string it is read as takes up 10 bytes.
 // This struct takes up 4 bytes!
 
+use std::str::FromStr;
+
 use super::deserialise_date;
 
 /// Represents a date in the format `YYYY-MM-DD`.
@@ -27,6 +29,16 @@ impl Default for Date {
             month: 0,
             day: 0,
         }
+    }
+}
+
+// ---------------------------------------------------------------
+//                        Parse implementation
+// ---------------------------------------------------------------
+impl FromStr for Date {
+    type Err = ();
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(deserialise_date(s))
     }
 }
 

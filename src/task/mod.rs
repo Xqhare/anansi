@@ -141,6 +141,38 @@ impl Task {
         &mut self.priority
     }
 
+    /// Returns a mutable reference to the completion date of the task.
+    ///
+    /// # Example
+    /// 
+    /// ```
+    /// use anansi::Task;
+    /// 
+    /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
+    /// let completion_date = task.mut_completion_date();
+    /// *completion_date = "2022-11-22".parse().unwrap();
+    /// assert_eq!(task.completion_date(), "2022-11-22");
+    /// ```
+    pub fn mut_completion_date(&mut self) -> &mut Date {
+        &mut self.completion_date
+    }
+
+    /// Returns a mutable reference to the inception date of the task.
+    ///
+    /// # Example
+    /// 
+    /// ```
+    /// use anansi::Task;
+    /// 
+    /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
+    /// let inception_date = task.mut_inception_date();
+    /// *inception_date = "2022-11-01".parse().unwrap();
+    /// assert_eq!(task.inception_date(), "2022-11-01");
+    /// ```
+    pub fn mut_inception_date(&mut self) -> &mut Date {
+        &mut self.inception_date
+    }
+
     /// Returns a mutable reference to the text of the task.
     ///
     /// # Example
