@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 
 use builder::deserialize_task;
 
-use crate::{error::AnansiError, Date};
+use crate::{Date, error::AnansiError};
 
 /// Represents a single task.
 /// A task is a single line in the todo.txt file.
@@ -112,10 +112,10 @@ impl Task {
     /// Returns a mutable reference to the status of the task.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
     /// let status = task.mut_status();
     /// *status = true;
@@ -128,10 +128,10 @@ impl Task {
     /// Returns a mutable reference to the priority of the task.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
     /// let priority = task.mut_priority();
     /// *priority = Some('B');
@@ -144,10 +144,10 @@ impl Task {
     /// Returns a mutable reference to the completion date of the task.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
     /// let completion_date = task.mut_completion_date();
     /// *completion_date = "2022-11-22".parse().unwrap();
@@ -160,10 +160,10 @@ impl Task {
     /// Returns a mutable reference to the inception date of the task.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
     /// let inception_date = task.mut_inception_date();
     /// *inception_date = "2022-11-01".parse().unwrap();
@@ -176,10 +176,10 @@ impl Task {
     /// Returns a mutable reference to the text of the task.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let mut task = Task::new("(A) 2022-11-11 2022-01-01 test", 0);
     /// let text = task.mut_text();
     /// *text = "new text".to_string();
@@ -231,7 +231,7 @@ impl Task {
     /// Marks the task as done.
     ///
     /// If a completion date is given, it will be stored in the task.
-    /// 
+    ///
     /// Should you supply a completion date and the inception date is not set, the supplied
     /// date will be dropped.
     ///
@@ -241,14 +241,14 @@ impl Task {
     /// If a task has already been marked as done, nothing will happen.
     ///
     /// # Arguments
-    /// 
+    ///
     /// * `completion_date` - The date the task has been completed.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("(A) 2022-01-01 test", 0);
     /// assert_eq!(task.is_done(), false);
     /// assert_eq!(task.inception_date(), "2022-01-01");
@@ -270,13 +270,19 @@ impl Task {
             task.done = true;
             if task.inception_date.is_set() {
                 if let Some(date) = completion_date {
-                    task.original_text = format!("x ({}) {} {} {}", task.prio(), date, task.inception_date, task.text);
+                    task.original_text = format!(
+                        "x ({}) {} {} {}",
+                        task.prio(),
+                        date,
+                        task.inception_date,
+                        task.text
+                    );
                     task.completion_date = date;
                 } else {
                     return Err(
-                        AnansiError { 
-                            title: "Missing completion date".to_string(), 
-                            message: "If a Task has a inception date set, the standard requires a completion date to be set as well.".to_string() 
+                        AnansiError {
+                            title: "Missing completion date".to_string(),
+                            message: "If a Task has a inception date set, the standard requires a completion date to be set as well.".to_string()
                         });
                 }
             } else {
@@ -295,10 +301,10 @@ impl Task {
     /// Returns a copy of the task, which is now no longer marked as done.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
     /// assert_eq!(task.is_done(), true);
     /// assert_eq!(task.completion_date(), "2022-11-11");
@@ -313,7 +319,8 @@ impl Task {
             task.done = false;
             if task.completion_date.is_set() {
                 task.completion_date = Date::default();
-                task.original_text = format!("({}) {} {}", task.prio(), task.inception_date, task.text);
+                task.original_text =
+                    format!("({}) {} {}", task.prio(), task.inception_date, task.text);
             } else {
                 task.original_text = task.original_text.replacen("x ", "", 1);
             }
@@ -326,10 +333,10 @@ impl Task {
     /// If the task has no priority, an empty string will be returned.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("(A) test", 0);
     /// assert_eq!(task.prio(), "A");
     /// ```
@@ -344,10 +351,10 @@ impl Task {
     /// Returns all context tags of the task.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("(A) test @air @home", 0);
     /// assert_eq!(task.contexts(), &vec!["air", "home"]);
     /// ```
@@ -358,10 +365,10 @@ impl Task {
     /// Returns all project tags of the task.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("(A) test +air +home", 0);
     /// assert_eq!(task.projects(), &vec!["air", "home"]);
     /// ```
@@ -372,10 +379,10 @@ impl Task {
     /// Returns all special tags of the task as a map.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("(A) test due:tomorrow", 0);
     /// assert_eq!(task.specials().get("due").unwrap(), "tomorrow");
     /// ```
@@ -388,10 +395,10 @@ impl Task {
     /// If the task is not done or the completion date is not set, an empty string will be returned.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
     /// assert_eq!(task.completion_date(), "2022-11-11");
     /// ```
@@ -404,10 +411,10 @@ impl Task {
     /// If the task is not done or the inception date is not set, an empty string will be returned.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
     /// assert_eq!(task.inception_date(), "2022-01-01");
     /// ```
@@ -419,10 +426,10 @@ impl Task {
     /// This includes tags, but excludes dates, priority and done status.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val", 0);
     /// assert_eq!(task.text(), "test +proj @cont key:val");
     /// ```
@@ -434,10 +441,10 @@ impl Task {
     /// This excludes tags, dates, priority and done status.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val", 0);
     /// assert_eq!(task.description(), "test");
     /// ```
@@ -449,10 +456,10 @@ impl Task {
     /// This includes dates, priority and done status.
     ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use anansi::Task;
-    /// 
+    ///
     /// let task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test +proj @cont key:val", 0);
     /// assert_eq!(task.original(), "x (A) 2022-11-11 2022-01-01 test +proj @cont key:val");
     /// ```
@@ -475,4 +482,3 @@ impl From<(&str, usize)> for Task {
         Task::new(value.0, value.1)
     }
 }
-
