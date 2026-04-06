@@ -6,7 +6,7 @@ use std::{collections::BTreeMap, path::PathBuf};
 
 use builder::{build_default_list, deserialise_list, serialise_list};
 
-use crate::{error::AnansiError, util::SortBy, Task};
+use crate::{Task, error::AnansiError, util::SortBy};
 
 type TaskID = usize;
 
@@ -56,7 +56,10 @@ impl List {
             self.tasks.insert(task.id(), Box::new(task));
             Ok(())
         } else {
-            return Err(AnansiError { title: "Invalid ID".to_string(), message: format!("Task with ID {} already exists", task.id()) });
+            return Err(AnansiError {
+                title: "Invalid ID".to_string(),
+                message: format!("Task with ID {} already exists", task.id()),
+            });
         }
     }
 
@@ -100,7 +103,11 @@ impl List {
     /// assert_eq!(list.open().len(), 2);
     /// ```
     pub fn add<S: AsRef<str>>(&mut self, task: S) {
-        let id = if let Some(id) = self.max_id() { id + 1 } else { 0 };
+        let id = if let Some(id) = self.max_id() {
+            id + 1
+        } else {
+            0
+        };
         let task: Task = Task::new(task.as_ref(), id);
         if task.is_done() {
             self.done_tasks.push(id);
@@ -149,7 +156,10 @@ impl List {
     /// ```
     pub fn update(&mut self, new_task: Task, task_id: TaskID) -> Result<(), AnansiError> {
         if !self.is_id_used(task_id) || new_task.id() != task_id {
-            return Err(AnansiError { title: "Invalid ID".to_string(), message: format!("Task with ID {} does not exist", task_id) });
+            return Err(AnansiError {
+                title: "Invalid ID".to_string(),
+                message: format!("Task with ID {} does not exist", task_id),
+            });
         }
         self.open_tasks.retain(|t| *t != task_id);
         self.done_tasks.retain(|t| *t != task_id);
@@ -248,7 +258,10 @@ impl List {
     /// assert_eq!(done_tasks.len(), 1);
     /// ```
     pub fn done(&self) -> Vec<Task> {
-        self.done_tasks.iter().map(|id| self.get(*id).unwrap()).collect()
+        self.done_tasks
+            .iter()
+            .map(|id| self.get(*id).unwrap())
+            .collect()
     }
 
     /// Get all open tasks.
@@ -263,7 +276,10 @@ impl List {
     /// assert_eq!(open_tasks.len(), 1);
     /// ```
     pub fn open(&self) -> Vec<Task> {
-        self.open_tasks.iter().map(|id| self.get(*id).unwrap()).collect()
+        self.open_tasks
+            .iter()
+            .map(|id| self.get(*id).unwrap())
+            .collect()
     }
 
     /// Save the list to the file.
@@ -387,7 +403,7 @@ impl List {
             for tag in task.contexts() {
                 if tag.to_lowercase().contains(&context.to_lowercase()) {
                     filtered.push(*task.clone());
-                    break
+                    break;
                 }
             }
         }
@@ -397,7 +413,7 @@ impl List {
             debug_assert!(pos_err.is_ok());
         }
         filtered_list
-       }
+    }
 
     /// Filter tasks by project.
     ///
@@ -428,7 +444,7 @@ impl List {
             for tag in task.projects() {
                 if tag.to_lowercase().contains(&project.to_lowercase()) {
                     filtered.push(*task.clone());
-                    break
+                    break;
                 }
             }
         }
@@ -458,7 +474,7 @@ impl List {
     /// list.add("Task 2 due:tomorrow");
     /// list.add("Task 3 DUE:31.12");
     /// list.add("x Task 4 assignment_due:2020-01-01");
-    /// 
+    ///
     /// for t in list.by_special("due").tasks() {
     ///     println!("{:?}", t);
     /// }
@@ -473,7 +489,7 @@ impl List {
             for key in task.specials().keys() {
                 if key.to_lowercase().contains(&special.to_lowercase()) {
                     filtered.push(*task.clone());
-                    break
+                    break;
                 }
             }
         }

@@ -176,14 +176,38 @@ fn sort_by_completion_date_unique() {
     list.add("x 2022-02-11 2022-01-01 (A) Task 8");
 
     let sorted_tasks = list.sort(SortBy::CompletionDate);
-    assert_eq!(sorted_tasks[0].original(), "x 2022-02-11 2022-01-01 (A) Task 8");
-    assert_eq!(sorted_tasks[1].original(), "x 2022-02-12 2022-01-02 (A) Task 7");
-    assert_eq!(sorted_tasks[2].original(), "x 2022-02-13 2022-01-03 (A) Task 6");
-    assert_eq!(sorted_tasks[3].original(), "x 2022-02-14 2022-01-04 (A) Task 5");
-    assert_eq!(sorted_tasks[4].original(), "x 2022-02-15 2022-01-05 (A) Task 4");
-    assert_eq!(sorted_tasks[5].original(), "x 2022-02-16 2022-01-06 (A) Task 3");
-    assert_eq!(sorted_tasks[6].original(), "x 2022-02-17 2022-01-07 (A) Task 2");
-    assert_eq!(sorted_tasks[7].original(), "x 2022-02-18 2022-01-08 (A) Task 1");
+    assert_eq!(
+        sorted_tasks[0].original(),
+        "x 2022-02-11 2022-01-01 (A) Task 8"
+    );
+    assert_eq!(
+        sorted_tasks[1].original(),
+        "x 2022-02-12 2022-01-02 (A) Task 7"
+    );
+    assert_eq!(
+        sorted_tasks[2].original(),
+        "x 2022-02-13 2022-01-03 (A) Task 6"
+    );
+    assert_eq!(
+        sorted_tasks[3].original(),
+        "x 2022-02-14 2022-01-04 (A) Task 5"
+    );
+    assert_eq!(
+        sorted_tasks[4].original(),
+        "x 2022-02-15 2022-01-05 (A) Task 4"
+    );
+    assert_eq!(
+        sorted_tasks[5].original(),
+        "x 2022-02-16 2022-01-06 (A) Task 3"
+    );
+    assert_eq!(
+        sorted_tasks[6].original(),
+        "x 2022-02-17 2022-01-07 (A) Task 2"
+    );
+    assert_eq!(
+        sorted_tasks[7].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 1"
+    );
 }
 
 #[test]
@@ -208,20 +232,68 @@ fn sort_by_completion_date_non_unique() {
     list.add("x 2022-02-08 2022-01-08 (A) Task 16");
 
     let sorted_tasks = list.sort(SortBy::CompletionDate);
-    assert_eq!(sorted_tasks[0].original(), "x 2022-02-08 2022-01-08 (A) Task 9");
-    assert_eq!(sorted_tasks[1].original(), "x 2022-02-08 2022-01-08 (A) Task 10");
-    assert_eq!(sorted_tasks[2].original(), "x 2022-02-08 2022-01-08 (A) Task 11");
-    assert_eq!(sorted_tasks[3].original(), "x 2022-02-08 2022-01-08 (A) Task 12");
-    assert_eq!(sorted_tasks[4].original(), "x 2022-02-08 2022-01-08 (A) Task 13");
-    assert_eq!(sorted_tasks[5].original(), "x 2022-02-08 2022-01-08 (A) Task 14");
-    assert_eq!(sorted_tasks[6].original(), "x 2022-02-08 2022-01-08 (A) Task 15");
-    assert_eq!(sorted_tasks[7].original(), "x 2022-02-08 2022-01-08 (A) Task 16");
-    assert_eq!(sorted_tasks[8].original(), "x 2022-02-18 2022-01-08 (A) Task 1");
-    assert_eq!(sorted_tasks[9].original(), "x 2022-02-18 2022-01-08 (A) Task 2");
-    assert_eq!(sorted_tasks[10].original(), "x 2022-02-18 2022-01-08 (A) Task 3");
-    assert_eq!(sorted_tasks[11].original(), "x 2022-02-18 2022-01-08 (A) Task 4");
-    assert_eq!(sorted_tasks[12].original(), "x 2022-02-18 2022-01-08 (A) Task 5");
-    assert_eq!(sorted_tasks[13].original(), "x 2022-02-18 2022-01-08 (A) Task 6");
-    assert_eq!(sorted_tasks[14].original(), "x 2022-02-18 2022-01-08 (A) Task 7");
-    assert_eq!(sorted_tasks[15].original(), "x 2022-02-18 2022-01-08 (A) Task 8");
+    assert_eq!(
+        sorted_tasks[0].original(),
+        "x 2022-02-08 2022-01-08 (A) Task 9"
+    );
+    assert_eq!(
+        sorted_tasks[1].original(),
+        "x 2022-02-08 2022-01-08 (A) Task 10"
+    );
+    assert_eq!(
+        sorted_tasks[2].original(),
+        "x 2022-02-08 2022-01-08 (A) Task 11"
+    );
+    assert_eq!(
+        sorted_tasks[3].original(),
+        "x 2022-02-08 2022-01-08 (A) Task 12"
+    );
+    assert_eq!(
+        sorted_tasks[4].original(),
+        "x 2022-02-08 2022-01-08 (A) Task 13"
+    );
+    assert_eq!(
+        sorted_tasks[5].original(),
+        "x 2022-02-08 2022-01-08 (A) Task 14"
+    );
+    assert_eq!(
+        sorted_tasks[6].original(),
+        "x 2022-02-08 2022-01-08 (A) Task 15"
+    );
+    assert_eq!(
+        sorted_tasks[7].original(),
+        "x 2022-02-08 2022-01-08 (A) Task 16"
+    );
+    assert_eq!(
+        sorted_tasks[8].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 1"
+    );
+    assert_eq!(
+        sorted_tasks[9].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 2"
+    );
+    assert_eq!(
+        sorted_tasks[10].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 3"
+    );
+    assert_eq!(
+        sorted_tasks[11].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 4"
+    );
+    assert_eq!(
+        sorted_tasks[12].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 5"
+    );
+    assert_eq!(
+        sorted_tasks[13].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 6"
+    );
+    assert_eq!(
+        sorted_tasks[14].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 7"
+    );
+    assert_eq!(
+        sorted_tasks[15].original(),
+        "x 2022-02-18 2022-01-08 (A) Task 8"
+    );
 }

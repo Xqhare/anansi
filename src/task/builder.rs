@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, VecDeque};
 
-use crate::{util::deserialise_date, Date};
+use crate::{Date, util::deserialise_date};
 
 use super::Task;
 
@@ -71,7 +71,12 @@ pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
             text.push_str(token);
             text.push(' ');
             project_tags.push(token.strip_prefix('+').unwrap().to_string());
-        } else if token.len() > 2 && !token.starts_with(':') && !token.ends_with(':') && token.contains(':') && !token.contains("::") {
+        } else if token.len() > 2
+            && !token.starts_with(':')
+            && !token.ends_with(':')
+            && token.contains(':')
+            && !token.contains("::")
+        {
             text.push_str(token);
             text.push(' ');
             let (key, value) = token.split_once(':').unwrap();
@@ -98,4 +103,3 @@ pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
         original_text,
     }
 }
-

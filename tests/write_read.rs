@@ -48,8 +48,23 @@ fn write_read_all() {
     assert_eq!(read_list.done().len(), 5);
 
     assert_eq!(read_list.by_project("proj").tasks().len(), 15);
-    assert_eq!(read_list.by_project("proj").by_context("cont0").tasks().len(), 5);
-    assert_eq!(read_list.by_project("proj").by_context("cont0").by_special("due").tasks().len(), 1);
+    assert_eq!(
+        read_list
+            .by_project("proj")
+            .by_context("cont0")
+            .tasks()
+            .len(),
+        5
+    );
+    assert_eq!(
+        read_list
+            .by_project("proj")
+            .by_context("cont0")
+            .by_special("due")
+            .tasks()
+            .len(),
+        1
+    );
     assert_eq!(read_list.by_context("cont").tasks().len(), 15);
 
     let remove = std::fs::remove_file(path);

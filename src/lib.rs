@@ -1,7 +1,7 @@
+mod error;
 mod list;
 mod task;
 mod util;
-mod error;
 
 pub use error::AnansiError;
 pub use list::List;

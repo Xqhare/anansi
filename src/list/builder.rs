@@ -1,6 +1,6 @@
 use std::{collections::BTreeMap, path::PathBuf};
 
-use super::{TaskID, List, Task};
+use super::{List, Task, TaskID};
 
 pub fn build_default_list<P: Into<PathBuf>>(path: P) -> List {
     List {

@@ -51,7 +51,7 @@ impl Date {
     /// Consider using the `Date::from<String>` function instead.
     ///
     /// # Arguments
-    /// 
+    ///
     /// * `year` - The year of the date.
     /// * `month` - The month of the date.
     /// * `day` - The day of the date.
@@ -59,16 +59,12 @@ impl Date {
     /// # Example
     /// ```
     /// use anansi::Date;
-    /// 
+    ///
     /// let date = anansi::Date::new(2022, 1, 1);
     /// assert_eq!(date, Date::from("2022-01-01"));
     /// ```
     pub fn new(year: u16, month: u8, day: u8) -> Date {
-        Date {
-            year,
-            month,
-            day,
-        }
+        Date { year, month, day }
     }
 
     /// Formats a date into the format `YYYY-MM-DD`
@@ -76,7 +72,7 @@ impl Date {
     /// # Example
     /// ```
     /// use anansi::Date;
-    /// 
+    ///
     /// let date = anansi::Date::new(2022, 1, 1);
     /// assert_eq!(date.format_date(), "2022-01-01");
     /// let date = anansi::Date::default();
@@ -95,7 +91,7 @@ impl Date {
     /// # Example
     /// ```
     /// use anansi::Date;
-    /// 
+    ///
     /// let date = anansi::Date::new(2022, 1, 1);
     /// assert_eq!(date.is_set(), true);
     /// let date = anansi::Date::default();
