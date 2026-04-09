@@ -57,7 +57,6 @@ pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
     }
 
     let mut text = String::new();
-    let mut description = String::new();
     let mut context_tags: Vec<String> = Vec::new();
     let mut project_tags: Vec<String> = Vec::new();
     let mut special_tags: BTreeMap<String, String> = BTreeMap::new();
@@ -84,8 +83,6 @@ pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
         } else {
             text.push_str(token);
             text.push(' ');
-            description.push_str(token);
-            description.push(' ');
         }
     }
 
@@ -96,7 +93,6 @@ pub fn deserialize_task<S: AsRef<str>>(input: S, id: usize) -> Task {
         completion_date,
         inception_date,
         text: text.trim_end().to_string(),
-        description: description.trim_end().to_string(),
         context_tags,
         project_tags,
         special_tags,

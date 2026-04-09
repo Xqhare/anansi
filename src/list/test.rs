@@ -28,14 +28,14 @@ fn sort_by_prio_unique() {
 
     let sorted_tasks = list.sort(SortBy::Priority);
     println!("{:?}", sorted_tasks);
-    assert_eq!(sorted_tasks[0].original(), "(A) Task 8");
-    assert_eq!(sorted_tasks[1].original(), "(C) Task 7");
-    assert_eq!(sorted_tasks[2].original(), "(H) Task 6");
-    assert_eq!(sorted_tasks[3].original(), "(J) Task 5");
-    assert_eq!(sorted_tasks[4].original(), "(L) Task 4");
-    assert_eq!(sorted_tasks[5].original(), "(Q) Task 3");
-    assert_eq!(sorted_tasks[6].original(), "(X) Task 2");
-    assert_eq!(sorted_tasks[7].original(), "(Z) Task 1");
+    assert_eq!(sorted_tasks[0].to_string(), "(A) Task 8");
+    assert_eq!(sorted_tasks[1].to_string(), "(C) Task 7");
+    assert_eq!(sorted_tasks[2].to_string(), "(H) Task 6");
+    assert_eq!(sorted_tasks[3].to_string(), "(J) Task 5");
+    assert_eq!(sorted_tasks[4].to_string(), "(L) Task 4");
+    assert_eq!(sorted_tasks[5].to_string(), "(Q) Task 3");
+    assert_eq!(sorted_tasks[6].to_string(), "(X) Task 2");
+    assert_eq!(sorted_tasks[7].to_string(), "(Z) Task 1");
 }
 
 #[test]
@@ -71,33 +71,33 @@ fn sort_by_priority_non_unique() {
     list.add("(H) Task 27");
 
     let sorted_tasks = list.sort(SortBy::Priority);
-    assert_eq!(sorted_tasks[0].original(), "(H) Task 26");
-    assert_eq!(sorted_tasks[1].original(), "(H) Task 27");
-    assert_eq!(sorted_tasks[2].original(), "(J) Task 21");
-    assert_eq!(sorted_tasks[3].original(), "(J) Task 22");
-    assert_eq!(sorted_tasks[4].original(), "(J) Task 23");
-    assert_eq!(sorted_tasks[5].original(), "(J) Task 24");
-    assert_eq!(sorted_tasks[6].original(), "(J) Task 25");
-    assert_eq!(sorted_tasks[7].original(), "(L) Task 11");
-    assert_eq!(sorted_tasks[8].original(), "(L) Task 12");
-    assert_eq!(sorted_tasks[9].original(), "(L) Task 13");
-    assert_eq!(sorted_tasks[10].original(), "(L) Task 14");
-    assert_eq!(sorted_tasks[11].original(), "(L) Task 15");
-    assert_eq!(sorted_tasks[12].original(), "(L) Task 16");
-    assert_eq!(sorted_tasks[13].original(), "(L) Task 17");
-    assert_eq!(sorted_tasks[14].original(), "(L) Task 18");
-    assert_eq!(sorted_tasks[15].original(), "(L) Task 19");
-    assert_eq!(sorted_tasks[16].original(), "(L) Task 20");
-    assert_eq!(sorted_tasks[17].original(), "(Q) Task 10");
-    assert_eq!(sorted_tasks[18].original(), "(X) Task 9");
-    assert_eq!(sorted_tasks[19].original(), "(Z) Task 1");
-    assert_eq!(sorted_tasks[20].original(), "(Z) Task 2");
-    assert_eq!(sorted_tasks[21].original(), "(Z) Task 3");
-    assert_eq!(sorted_tasks[22].original(), "(Z) Task 4");
-    assert_eq!(sorted_tasks[23].original(), "(Z) Task 5");
-    assert_eq!(sorted_tasks[24].original(), "(Z) Task 6");
-    assert_eq!(sorted_tasks[25].original(), "(Z) Task 7");
-    assert_eq!(sorted_tasks[26].original(), "(Z) Task 8");
+    assert_eq!(sorted_tasks[0].to_string(), "(H) Task 26");
+    assert_eq!(sorted_tasks[1].to_string(), "(H) Task 27");
+    assert_eq!(sorted_tasks[2].to_string(), "(J) Task 21");
+    assert_eq!(sorted_tasks[3].to_string(), "(J) Task 22");
+    assert_eq!(sorted_tasks[4].to_string(), "(J) Task 23");
+    assert_eq!(sorted_tasks[5].to_string(), "(J) Task 24");
+    assert_eq!(sorted_tasks[6].to_string(), "(J) Task 25");
+    assert_eq!(sorted_tasks[7].to_string(), "(L) Task 11");
+    assert_eq!(sorted_tasks[8].to_string(), "(L) Task 12");
+    assert_eq!(sorted_tasks[9].to_string(), "(L) Task 13");
+    assert_eq!(sorted_tasks[10].to_string(), "(L) Task 14");
+    assert_eq!(sorted_tasks[11].to_string(), "(L) Task 15");
+    assert_eq!(sorted_tasks[12].to_string(), "(L) Task 16");
+    assert_eq!(sorted_tasks[13].to_string(), "(L) Task 17");
+    assert_eq!(sorted_tasks[14].to_string(), "(L) Task 18");
+    assert_eq!(sorted_tasks[15].to_string(), "(L) Task 19");
+    assert_eq!(sorted_tasks[16].to_string(), "(L) Task 20");
+    assert_eq!(sorted_tasks[17].to_string(), "(Q) Task 10");
+    assert_eq!(sorted_tasks[18].to_string(), "(X) Task 9");
+    assert_eq!(sorted_tasks[19].to_string(), "(Z) Task 1");
+    assert_eq!(sorted_tasks[20].to_string(), "(Z) Task 2");
+    assert_eq!(sorted_tasks[21].to_string(), "(Z) Task 3");
+    assert_eq!(sorted_tasks[22].to_string(), "(Z) Task 4");
+    assert_eq!(sorted_tasks[23].to_string(), "(Z) Task 5");
+    assert_eq!(sorted_tasks[24].to_string(), "(Z) Task 6");
+    assert_eq!(sorted_tasks[25].to_string(), "(Z) Task 7");
+    assert_eq!(sorted_tasks[26].to_string(), "(Z) Task 8");
 }
 
 #[test]
@@ -113,14 +113,14 @@ fn sort_by_inception_date_unique() {
     list.add("2022-01-01 (A) Task 8");
 
     let sorted_tasks = list.sort(SortBy::InceptionDate);
-    assert_eq!(sorted_tasks[0].original(), "2022-01-01 (A) Task 8");
-    assert_eq!(sorted_tasks[1].original(), "2022-01-02 (A) Task 7");
-    assert_eq!(sorted_tasks[2].original(), "2022-01-03 (A) Task 6");
-    assert_eq!(sorted_tasks[3].original(), "2022-01-04 (A) Task 5");
-    assert_eq!(sorted_tasks[4].original(), "2022-01-05 (A) Task 4");
-    assert_eq!(sorted_tasks[5].original(), "2022-01-06 (A) Task 3");
-    assert_eq!(sorted_tasks[6].original(), "2022-01-07 (A) Task 2");
-    assert_eq!(sorted_tasks[7].original(), "2022-01-08 (A) Task 1");
+    assert_eq!(sorted_tasks[0].to_string(), "2022-01-01 (A) Task 8");
+    assert_eq!(sorted_tasks[1].to_string(), "2022-01-02 (A) Task 7");
+    assert_eq!(sorted_tasks[2].to_string(), "2022-01-03 (A) Task 6");
+    assert_eq!(sorted_tasks[3].to_string(), "2022-01-04 (A) Task 5");
+    assert_eq!(sorted_tasks[4].to_string(), "2022-01-05 (A) Task 4");
+    assert_eq!(sorted_tasks[5].to_string(), "2022-01-06 (A) Task 3");
+    assert_eq!(sorted_tasks[6].to_string(), "2022-01-07 (A) Task 2");
+    assert_eq!(sorted_tasks[7].to_string(), "2022-01-08 (A) Task 1");
 }
 
 #[test]
@@ -145,22 +145,22 @@ fn sort_by_inception_date_non_unique() {
     list.add("2022-01-01 (H) Task 8");
 
     let sorted_tasks = list.sort(SortBy::InceptionDate);
-    assert_eq!(sorted_tasks[0].original(), "2022-01-01 (A) Task 1");
-    assert_eq!(sorted_tasks[1].original(), "2022-01-01 (B) Task 2");
-    assert_eq!(sorted_tasks[2].original(), "2022-01-01 (C) Task 3");
-    assert_eq!(sorted_tasks[3].original(), "2022-01-01 (D) Task 4");
-    assert_eq!(sorted_tasks[4].original(), "2022-01-01 (E) Task 5");
-    assert_eq!(sorted_tasks[5].original(), "2022-01-01 (F) Task 6");
-    assert_eq!(sorted_tasks[6].original(), "2022-01-01 (G) Task 7");
-    assert_eq!(sorted_tasks[7].original(), "2022-01-01 (H) Task 8");
-    assert_eq!(sorted_tasks[8].original(), "2022-01-02 (A) Task 9");
-    assert_eq!(sorted_tasks[9].original(), "2022-01-02 (B) Task 10");
-    assert_eq!(sorted_tasks[10].original(), "2022-01-02 (C) Task 11");
-    assert_eq!(sorted_tasks[11].original(), "2022-01-02 (D) Task 12");
-    assert_eq!(sorted_tasks[12].original(), "2022-01-02 (E) Task 13");
-    assert_eq!(sorted_tasks[13].original(), "2022-01-02 (F) Task 14");
-    assert_eq!(sorted_tasks[14].original(), "2022-01-02 (G) Task 15");
-    assert_eq!(sorted_tasks[15].original(), "2022-01-02 (H) Task 16");
+    assert_eq!(sorted_tasks[0].to_string(), "2022-01-01 (A) Task 1");
+    assert_eq!(sorted_tasks[1].to_string(), "2022-01-01 (B) Task 2");
+    assert_eq!(sorted_tasks[2].to_string(), "2022-01-01 (C) Task 3");
+    assert_eq!(sorted_tasks[3].to_string(), "2022-01-01 (D) Task 4");
+    assert_eq!(sorted_tasks[4].to_string(), "2022-01-01 (E) Task 5");
+    assert_eq!(sorted_tasks[5].to_string(), "2022-01-01 (F) Task 6");
+    assert_eq!(sorted_tasks[6].to_string(), "2022-01-01 (G) Task 7");
+    assert_eq!(sorted_tasks[7].to_string(), "2022-01-01 (H) Task 8");
+    assert_eq!(sorted_tasks[8].to_string(), "2022-01-02 (A) Task 9");
+    assert_eq!(sorted_tasks[9].to_string(), "2022-01-02 (B) Task 10");
+    assert_eq!(sorted_tasks[10].to_string(), "2022-01-02 (C) Task 11");
+    assert_eq!(sorted_tasks[11].to_string(), "2022-01-02 (D) Task 12");
+    assert_eq!(sorted_tasks[12].to_string(), "2022-01-02 (E) Task 13");
+    assert_eq!(sorted_tasks[13].to_string(), "2022-01-02 (F) Task 14");
+    assert_eq!(sorted_tasks[14].to_string(), "2022-01-02 (G) Task 15");
+    assert_eq!(sorted_tasks[15].to_string(), "2022-01-02 (H) Task 16");
 }
 
 #[test]
@@ -177,35 +177,35 @@ fn sort_by_completion_date_unique() {
 
     let sorted_tasks = list.sort(SortBy::CompletionDate);
     assert_eq!(
-        sorted_tasks[0].original(),
+        sorted_tasks[0].to_string(),
         "x 2022-02-11 2022-01-01 (A) Task 8"
     );
     assert_eq!(
-        sorted_tasks[1].original(),
+        sorted_tasks[1].to_string(),
         "x 2022-02-12 2022-01-02 (A) Task 7"
     );
     assert_eq!(
-        sorted_tasks[2].original(),
+        sorted_tasks[2].to_string(),
         "x 2022-02-13 2022-01-03 (A) Task 6"
     );
     assert_eq!(
-        sorted_tasks[3].original(),
+        sorted_tasks[3].to_string(),
         "x 2022-02-14 2022-01-04 (A) Task 5"
     );
     assert_eq!(
-        sorted_tasks[4].original(),
+        sorted_tasks[4].to_string(),
         "x 2022-02-15 2022-01-05 (A) Task 4"
     );
     assert_eq!(
-        sorted_tasks[5].original(),
+        sorted_tasks[5].to_string(),
         "x 2022-02-16 2022-01-06 (A) Task 3"
     );
     assert_eq!(
-        sorted_tasks[6].original(),
+        sorted_tasks[6].to_string(),
         "x 2022-02-17 2022-01-07 (A) Task 2"
     );
     assert_eq!(
-        sorted_tasks[7].original(),
+        sorted_tasks[7].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 1"
     );
 }
@@ -233,67 +233,67 @@ fn sort_by_completion_date_non_unique() {
 
     let sorted_tasks = list.sort(SortBy::CompletionDate);
     assert_eq!(
-        sorted_tasks[0].original(),
+        sorted_tasks[0].to_string(),
         "x 2022-02-08 2022-01-08 (A) Task 9"
     );
     assert_eq!(
-        sorted_tasks[1].original(),
+        sorted_tasks[1].to_string(),
         "x 2022-02-08 2022-01-08 (A) Task 10"
     );
     assert_eq!(
-        sorted_tasks[2].original(),
+        sorted_tasks[2].to_string(),
         "x 2022-02-08 2022-01-08 (A) Task 11"
     );
     assert_eq!(
-        sorted_tasks[3].original(),
+        sorted_tasks[3].to_string(),
         "x 2022-02-08 2022-01-08 (A) Task 12"
     );
     assert_eq!(
-        sorted_tasks[4].original(),
+        sorted_tasks[4].to_string(),
         "x 2022-02-08 2022-01-08 (A) Task 13"
     );
     assert_eq!(
-        sorted_tasks[5].original(),
+        sorted_tasks[5].to_string(),
         "x 2022-02-08 2022-01-08 (A) Task 14"
     );
     assert_eq!(
-        sorted_tasks[6].original(),
+        sorted_tasks[6].to_string(),
         "x 2022-02-08 2022-01-08 (A) Task 15"
     );
     assert_eq!(
-        sorted_tasks[7].original(),
+        sorted_tasks[7].to_string(),
         "x 2022-02-08 2022-01-08 (A) Task 16"
     );
     assert_eq!(
-        sorted_tasks[8].original(),
+        sorted_tasks[8].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 1"
     );
     assert_eq!(
-        sorted_tasks[9].original(),
+        sorted_tasks[9].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 2"
     );
     assert_eq!(
-        sorted_tasks[10].original(),
+        sorted_tasks[10].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 3"
     );
     assert_eq!(
-        sorted_tasks[11].original(),
+        sorted_tasks[11].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 4"
     );
     assert_eq!(
-        sorted_tasks[12].original(),
+        sorted_tasks[12].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 5"
     );
     assert_eq!(
-        sorted_tasks[13].original(),
+        sorted_tasks[13].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 6"
     );
     assert_eq!(
-        sorted_tasks[14].original(),
+        sorted_tasks[14].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 7"
     );
     assert_eq!(
-        sorted_tasks[15].original(),
+        sorted_tasks[15].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 8"
     );
 }

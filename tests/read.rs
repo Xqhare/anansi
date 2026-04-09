@@ -37,7 +37,7 @@ fn basic_todo() {
         .done()[0]
         .clone();
     assert_eq!(complete_task.is_done(), true);
-    assert_eq!(complete_task.prio(), "A");
+    assert_eq!(complete_task.prio(), Some('A'));
     assert_eq!(complete_task.completion_date(), "2020-10-21");
     assert_eq!(complete_task.inception_date(), "2020-10-20");
     assert_eq!(complete_task.contexts(), &vec!["context3".to_string()]);
@@ -47,9 +47,8 @@ fn basic_todo() {
         complete_task.text(),
         "Task description +project1 @context3 keyword:value"
     );
-    assert_eq!(complete_task.description(), "Task description");
     assert_eq!(
-        complete_task.original(),
+        complete_task.to_string(),
         "x (A) 2020-10-21 2020-10-20 Task description +project1 @context3 keyword:value"
     );
 }
@@ -78,11 +77,13 @@ fn leading_newline() {
 fn very_large_todo() {
     let start = std::time::Instant::now();
     let list = List::new("test-data/very-large-todo.txt");
-    assert_eq!(list.open().len(), 17724);
-    assert_eq!(list.done().len(), 6276);
+    assert_eq!(list.open().len(), 17_724);
+    assert_eq!(list.done().len(), 6_276);
+    assert_eq!(list.tasks().len(), 24_000);
     let elapsed = start.elapsed().as_micros();
 
     println!("Parsing todo took {} us / {} ms", elapsed, elapsed / 1000);
     // 200ms is 200_000us
-    assert!(elapsed < 215_000);
+    // Pushed down below 170ms after optimisation in release mode: ~45ms
+    assert!(elapsed < 180_000);
 }

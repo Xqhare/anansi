@@ -49,7 +49,8 @@ fn simple_extensive_use() {
     assert_eq!(list.by_context("air").tasks().len(), 3);
     assert_eq!(list.by_special("due").tasks().len(), 0);
     assert_eq!(list.by_project("proj").tasks().len(), 0);
-    let new_task1 = Task::new("Task 1", 0);
-    assert!(list.update(new_task1.clone(), 0).is_ok());
-    assert_eq!(new_task1, list.get(0).unwrap());
+    let id = list.max_id();
+    let new_task1 = Task::new("Task 1", id);
+    list.push_task(new_task1.clone());
+    assert_eq!(&new_task1, list.get(id).unwrap());
 }

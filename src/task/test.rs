@@ -9,14 +9,14 @@ fn mangled_string_old_ananke_prio_encoding() {
     let text0 = "() 2020-12-31 test +project @context key:value";
     let task0 = Task::new(text0, 0);
     assert_eq!(task0.is_done(), false);
-    assert_eq!(task0.prio(), String::from(""));
+    assert_eq!(task0.prio(), None);
     assert_eq!(task0.inception_date(), "2020-12-31");
     assert_eq!(task0.completion_date(), "");
 
     let text1 = "x () 2022-11-11 2020-12-31 test +project @context key:value";
     let task1 = Task::new(text1, 0);
     assert_eq!(task1.is_done(), true);
-    assert_eq!(task1.prio(), String::from(""));
+    assert_eq!(task1.prio(), None);
     assert_eq!(task1.inception_date(), "2020-12-31");
     assert_eq!(task1.completion_date(), "2022-11-11");
 }
@@ -26,7 +26,7 @@ fn basic_deserialisation() {
     let text = "x (A) test +project @context key:value";
     let task = Task::new(text, 0);
     assert_eq!(task.is_done(), true);
-    assert_eq!(task.prio(), String::from("A"));
+    assert_eq!(task.prio(), Some('A'));
     assert_eq!(task.contexts(), &vec!["context".to_string()]);
     assert_eq!(task.projects(), &vec!["project".to_string()]);
     assert_eq!(
@@ -34,7 +34,7 @@ fn basic_deserialisation() {
         &BTreeMap::from([("key".to_string(), "value".to_string())])
     );
     assert_eq!(task.text(), "test +project @context key:value");
-    assert_eq!(task.original(), text);
+    assert_eq!(task.to_string(), text);
     assert!(!task.completion_date.is_set());
     assert!(!task.inception_date.is_set());
 }
@@ -45,7 +45,7 @@ fn advanced_deserialisation() {
         "(Z) 2020-12-31 lorem ipsum dolor sit amet +project @context key1:value1 key2:value2";
     let task1 = Task::new(text1, 0);
     assert_eq!(task1.is_done(), false);
-    assert_eq!(task1.prio(), String::from("Z"));
+    assert_eq!(task1.prio(), Some('Z'));
     assert_eq!(task1.completion_date(), "");
     assert_eq!(task1.inception_date(), "2020-12-31");
     assert_eq!(task1.contexts(), &vec!["context".to_string()]);
@@ -61,12 +61,12 @@ fn advanced_deserialisation() {
         task1.text(),
         "lorem ipsum dolor sit amet +project @context key1:value1 key2:value2"
     );
-    assert_eq!(task1.original(), text1);
+    assert_eq!(task1.to_string(), text1);
 
     let text2 = "2010-10-20 2010-10-01 lorem ipsum dolor sit amet +project @context key1:value1 key2:value2";
     let task2 = Task::new(text2, 0);
     assert_eq!(task2.is_done(), false);
-    assert_eq!(task2.prio(), "");
+    assert_eq!(task2.prio(), None);
     assert_eq!(task2.completion_date(), "2010-10-20");
     assert_eq!(task2.inception_date(), "2010-10-01");
     assert_eq!(task2.contexts(), &vec!["context".to_string()]);
@@ -82,7 +82,7 @@ fn advanced_deserialisation() {
         task2.text(),
         "lorem ipsum dolor sit amet +project @context key1:value1 key2:value2"
     );
-    assert_eq!(task2.original(), text2);
+    assert_eq!(task2.to_string(), text2);
 }
 
 #[test]
@@ -136,35 +136,14 @@ fn ordering() {
     assert!(task1 <= task4);
 }
 
-/* #[test]
-fn update() {
-    let mut task1 = Task::new("(A) test", 0);
-    task1.update("x (B) test");
-    assert_eq!(task1.is_done(), true);
-    assert_eq!(task1.prio(), String::from("B"));
-    assert_eq!(task1.text(), "test");
-    assert_eq!(task1.original(), "x (B) test");
-}
-
-#[test]
-fn mark_done() {
-    let mut task1 = Task::new("(A) test", 0);
-    task1.done(None);
-    assert_eq!(task1.is_done(), true);
-    assert_eq!(task1.original(), "x (A) test");
-    task1.undone();
-    assert_eq!(task1.is_done(), false);
-    assert_eq!(task1.original(), "(A) test");
-} */
-
 #[test]
 fn priority() {
     let task1 = Task::new("(A) test", 0);
-    assert_eq!(task1.prio(), String::from("A"));
+    assert_eq!(task1.prio(), Some('A'));
     let task2 = Task::new("(B) test", 0);
-    assert_eq!(task2.prio(), String::from("B"));
+    assert_eq!(task2.prio(), Some('B'));
     let task3 = Task::new("(Z) test", 0);
-    assert_eq!(task3.prio(), String::from("Z"));
+    assert_eq!(task3.prio(), Some('Z'));
 }
 
 #[test]
@@ -263,18 +242,6 @@ fn dates() {
     );
     assert_eq!(task2.completion_date(), "2010-10-20");
     assert_eq!(task2.inception_date(), "2010-10-01");
-
-    /* let mut task3 = Task::new("(A) 2020-12-31 test +project +project2 +test +test2 +test3 key1:value1 key2:value2", 0);
-    assert_eq!(task3.completion_date(), "");
-    assert_eq!(task3.inception_date(), "2020-12-31");
-    task3.done(Some(Date::new(2021, 12, 30)));
-    assert_eq!(task3.completion_date(), "2021-12-30");
-    assert_eq!(task3.inception_date(), "2020-12-31");
-    assert_eq!(task3.original(), "x (A) 2021-12-30 2020-12-31 test +project +project2 +test +test2 +test3 key1:value1 key2:value2");
-    task3.undone();
-    assert_eq!(task3.completion_date(), "");
-    assert_eq!(task3.inception_date(), "2020-12-31");
-    assert_eq!(task3.original(), "(A) 2020-12-31 test +project +project2 +test +test2 +test3 key1:value1 key2:value2"); */
 }
 
 #[test]
@@ -291,6 +258,6 @@ fn priorities() {
             ),
             0,
         );
-        assert_eq!(task.prio(), letter);
+        assert_eq!(task.prio(), Some(letter.chars().next().unwrap()));
     }
 }
