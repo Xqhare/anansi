@@ -21,18 +21,19 @@ Then use it in your code.
 ```rust
 use anansi::{List, Task};
 
+std::fs::remove_file("path_to_todo.txt");
+
 // If the path does not exist, it will be created
-let mut list = List::new("path/to/todo.txt"); // TaskList
+let mut list = List::new("path_to_todo.txt"); // TaskList
 
 let task_id_0 = list.add("x (A) 2012-12-12 2010-10-10 Buy milk @store +cooking recipe:cake");
 let task_id_1 = list.add("(B) 2010-10-10 Buy eggs @store +cooking");
 
 for mut task in list.done() {
-    println!("{}", task);
 
     // Accessors
 
-    task.id(); // 0
+    task.id(); // Minimum ID is 1
     assert_eq!(task.id(), 1);
     task.prio(); // "A"
     assert_eq!(task.prio(), Some('A'));
@@ -82,18 +83,22 @@ let context = list.by_context("store"); // TaskList
 let project = list.by_project("cooking"); // TaskList
 let special = list.by_special("recipe"); // TaskList
 
-let combo = list.by_prio("A").by_context("store").by_project("cooking").set_path("new/path/todo.txt"); // TaskList
+let save = list.save(); // Result<(), std::io::Error>
+assert!(save.is_ok());
 
-combo.save();
+let combo = list.by_prio("A").by_context("store").by_project("cooking").update_path("new_path_todo.txt"); // TaskList
+let save = combo.save();
+assert!(save.is_ok());
 
-list.save();
+let list1 = List::load("path_to_todo.txt"); // List
+let list2 = List::load("new_path_todo.txt"); // List
 
-let list1 = List::load("path/to/todo.txt"); // List
-let list2 = List::load("path/to/other/todo.txt"); // List
-assert_ne!(list1, list2);
+assert!(list1.is_ok());
+assert!(list2.is_ok());
+assert_ne!(list1.unwrap(), list2.unwrap());
 
-std::fs::remove_file("path/to/other/todo.txt");
-std::fs::remove_file("path/to/todo.txt");
+std::fs::remove_file("new_path_todo.txt");
+std::fs::remove_file("path_to_todo.txt");
 ```
 
 ## Comparing tasks

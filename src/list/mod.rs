@@ -39,7 +39,7 @@ impl List {
         self.max_id.unwrap_or(0) + 1
     }
 
-    pub fn set_path<P: Into<PathBuf>>(&mut self, path: P) -> List {
+    pub fn update_path<P: Into<PathBuf>>(&mut self, path: P) -> List {
         self.file_path = path.into();
         self.clone()
     }
@@ -76,6 +76,9 @@ impl List {
     /// If the supplied path exists, load the file and deserialize.
     /// If the supplied path does not exist, create a new, empty list.
     ///
+    /// Will not error if the file cannot be read or does not exist.
+    /// Consider using `load` instead if you want to handle these errors.
+    ///
     /// # Example
     /// ```
     /// use anansi::List;
@@ -94,13 +97,22 @@ impl List {
 
     /// Load a list from a file.
     ///
+    /// Will error if the file cannot be read, or does not exist.
+    ///
+    /// If you do not want to handle these errors, and always fall back to a new list, use `new` instead.
+    ///
     /// # Example
     /// ```
     /// use anansi::List;
-    /// let mut list = List::load("path/to/list.txt");
+    /// let mut list = List::load("non_existing_path/to/list.txt");
+    /// assert!(list.is_err());
     /// ```
-    pub fn load<P: Into<PathBuf>>(path: P) -> List {
-        List::new(path)
+    pub fn load<P: Into<PathBuf>>(path: P) -> Result<List, std::io::Error> {
+        let file_path = path.into();
+        match std::fs::read_to_string(&file_path) {
+            Ok(file) => Ok(deserialise_list(file_path, file.trim())),
+            Err(err) => Err(err),
+        }
     }
 
     /// Add a task to the list.
