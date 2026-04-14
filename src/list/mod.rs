@@ -5,7 +5,7 @@ use std::{collections::BTreeMap, path::PathBuf};
 
 use builder::{build_default_list, deserialise_list, serialise_list};
 
-use crate::{Task, util::SortBy};
+use crate::{Task, error::AnansiResult, util::SortBy};
 
 type TaskID = usize;
 
@@ -107,11 +107,11 @@ impl List {
     /// let mut list = List::load("non_existing_path/to/list.txt");
     /// assert!(list.is_err());
     /// ```
-    pub fn load<P: Into<PathBuf>>(path: P) -> Result<List, std::io::Error> {
+    pub fn load<P: Into<PathBuf>>(path: P) -> AnansiResult<List> {
         let file_path = path.into();
         match std::fs::read_to_string(&file_path) {
             Ok(file) => Ok(deserialise_list(file_path, file.trim())),
-            Err(err) => Err(err),
+            Err(err) => Err(err.into()),
         }
     }
 
@@ -292,9 +292,12 @@ impl List {
     ///
     /// # let _ = std::fs::remove_file("list.txt");
     /// ```
-    pub fn save(&self) -> Result<(), std::io::Error> {
+    pub fn save(&self) -> AnansiResult<()> {
         let serialised = serialise_list(self);
-        std::fs::write(&self.file_path, serialised)
+        match std::fs::write(&self.file_path, serialised) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e.into()),
+        }
     }
 
     /// Filter tasks by priority.
