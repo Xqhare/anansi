@@ -39,9 +39,30 @@ impl List {
         self.max_id.unwrap_or(0) + 1
     }
 
+    /// Returns the path to the list file.
+    pub fn get_path(&self) -> &PathBuf {
+        &self.file_path
+    }
+
+    /// Updates the path to the list file.
     pub fn update_path<P: Into<PathBuf>>(&mut self, path: P) -> List {
         self.file_path = path.into();
         self.clone()
+    }
+
+    /// Returns the amount of open tasks in the list.
+    pub fn open_task_amount(&self) -> usize {
+        self.open_tasks.len()
+    }
+
+    /// Returns the amount of done tasks in the list.
+    pub fn done_task_amount(&self) -> usize {
+        self.done_tasks.len()
+    }
+
+    /// Returns the amount of tasks in the list.
+    pub fn task_amount(&self) -> usize {
+        self.tasks.len()
     }
 
     /// Add a task to the list.
