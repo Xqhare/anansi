@@ -115,7 +115,28 @@ impl Task {
     ///
     /// Do not use this constructor directly if you want to add a task to a `TaskList`.
     pub fn new<S: AsRef<str>>(text: S, id: usize) -> Task {
+        if text.as_ref().is_empty()
+            || (text.as_ref().len() == 1 && text.as_ref().chars().nth(0).unwrap().is_whitespace())
+        {
+            return Task::new_empty(id);
+        }
         deserialize_task(text, id)
+    }
+
+    /// Creates a new empty task with the given id.
+    pub fn new_empty(id: usize) -> Task {
+        Task {
+            id,
+            done: false,
+            priority: None,
+            completion_date: Date::default(),
+            inception_date: Date::default(),
+            text: "".to_string(),
+            context_tags: vec![],
+            project_tags: vec![],
+            special_tags: BTreeMap::new(),
+            original_text: "".to_string(),
+        }
     }
 
     /// Returns the id of the task.

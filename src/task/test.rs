@@ -21,6 +21,16 @@ fn mangled_string_old_ananke_prio_encoding() {
     assert_eq!(task1.completion_date(), "2022-11-11");
 }
 
+/// Regression test
+#[test]
+fn empty_string() {
+    let task = Task::new("", 0);
+    assert_eq!(task.is_done(), false);
+    assert_eq!(task.prio(), None);
+    assert_eq!(task.inception_date(), "");
+    assert_eq!(task.completion_date(), "");
+}
+
 #[test]
 fn basic_deserialisation() {
     let text = "x (A) test +project @context key:value";
