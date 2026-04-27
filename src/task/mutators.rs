@@ -205,7 +205,6 @@ impl Task {
     /// Updates the text of the task.
     ///
     /// The task will be updated to reflect the new text.
-    /// The done status, priority, completion and inception date will be retained if present.
     ///
     /// # Example
     ///
@@ -222,23 +221,8 @@ impl Task {
     /// ```
     pub fn update_text<S: Into<String>>(&mut self, new_text: S) {
         let new_text = new_text.into();
-        let new_text = format!(
-            "{} ({}) {} {} {}",
-            if self.done { "x" } else { "" },
-            self.priority.unwrap_or(' '),
-            self.inception_date,
-            self.completion_date,
-            new_text
-        );
-        let new_task = Task::from((new_text.as_str(), self.id));
-        self.done = new_task.is_done();
-        self.priority = new_task.prio();
-        self.completion_date = Date::from(new_task.completion_date());
-        self.inception_date = Date::from(new_task.inception_date());
-        self.context_tags = new_task.contexts().clone();
-        self.project_tags = new_task.projects().clone();
-        self.special_tags = new_task.specials().clone();
-        self.text = new_task.text().to_string();
+        self.text = new_text.clone();
+        let new_task = Task::from((self.to_string().as_str(), 0usize));
         self.original_text = new_task.original_text;
     }
     /// Marks the task as done.
