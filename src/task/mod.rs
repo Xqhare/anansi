@@ -155,7 +155,27 @@ impl Task {
 // ---------------------------------------------------------------
 impl std::fmt::Display for Task {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.original_text)
+        let mut string = String::new();
+        if self.done {
+            string.push('x');
+            string.push(' ');
+        }
+        if let Some(prio) = self.prio() {
+            string.push('(');
+            string.push(prio);
+            string.push(')');
+            string.push(' ');
+        }
+        if self.completion_date != Date::default() && self.done {
+            string.push_str(&self.completion_date());
+            string.push(' ');
+        }
+        if self.inception_date != Date::default() {
+            string.push_str(&self.inception_date());
+            string.push(' ');
+        }
+        string.push_str(&self.text);
+        write!(f, "{}", string)
     }
 }
 
