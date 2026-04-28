@@ -224,6 +224,9 @@ impl Task {
         self.text = new_text.clone();
         let new_task = Task::from((self.to_string().as_str(), 0usize));
         self.original_text = new_task.original_text;
+        self.context_tags = new_task.context_tags;
+        self.project_tags = new_task.project_tags;
+        self.special_tags = new_task.special_tags;
     }
     /// Marks the task as done.
     ///
