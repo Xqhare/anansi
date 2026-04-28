@@ -523,3 +523,35 @@ impl List {
         filtered_list
     }
 }
+
+/// Sort a vector of tasks in place.
+///
+/// # Example
+/// ```
+/// use anansi::{List, sort_vec_task, SortBy};
+/// let mut list = List::new("path/to/list.txt");
+/// list.add("(A) Task 1");
+/// list.add("(B) Task 2");
+/// list.add("(C) Task 3");
+/// list.add("(D) Task 4");
+/// list.add("(E) Task 5");
+/// list.add("(F) Task 6");
+/// list.add("(G) Task 7");
+/// list.add("(H) Task 8");
+/// list.add("(I) Task 9");
+/// let mut sorted_tasks = list.sort(SortBy::Priority);
+/// sort_vec_task(&mut sorted_tasks, SortBy::CompletionDate);
+/// assert_eq!(sorted_tasks[0].to_string(), "(A) Task 1");
+/// assert_eq!(sorted_tasks[1].to_string(), "(B) Task 2");
+/// ```
+pub fn sort_vec_task(to_sort: &mut Vec<Task>, sort_by: SortBy) {
+    match sort_by {
+        SortBy::Priority => to_sort.sort_by(|a, b| a.prio().cmp(&b.prio())),
+        SortBy::InceptionDate => {
+            to_sort.sort_by(|a, b| a.inception_date().cmp(&b.inception_date()))
+        }
+        SortBy::CompletionDate => {
+            to_sort.sort_by(|a, b| a.completion_date().cmp(&b.completion_date()))
+        }
+    }
+}

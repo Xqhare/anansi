@@ -211,7 +211,7 @@ impl Task {
     /// ```
     /// use anansi::Task;
     ///
-    /// let mut task = anansi::Task::new("x (A) 2022-01-01 2022-11-11 test", 0);
+    /// let mut task = anansi::Task::new("x (A) 2022-11-11 2022-01-01 test", 0);
     /// task.update_text("new text");
     /// assert_eq!(task.text(), "new text");
     /// assert_eq!(task.is_done(), true);

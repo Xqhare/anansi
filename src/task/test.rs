@@ -73,9 +73,9 @@ fn advanced_deserialisation() {
     );
     assert_eq!(task1.to_string(), text1);
 
-    let text2 = "2010-10-20 2010-10-01 lorem ipsum dolor sit amet +project @context key1:value1 key2:value2";
+    let text2 = "x 2010-10-20 2010-10-01 lorem ipsum dolor sit amet +project @context key1:value1 key2:value2";
     let task2 = Task::new(text2, 0);
-    assert_eq!(task2.is_done(), false);
+    assert_eq!(task2.is_done(), true);
     assert_eq!(task2.prio(), None);
     assert_eq!(task2.completion_date(), "2010-10-20");
     assert_eq!(task2.inception_date(), "2010-10-01");
