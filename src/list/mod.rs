@@ -362,6 +362,41 @@ impl List {
         filtered_list
     }
 
+    /// Filter tasks by priority.
+    ///
+    /// Will filter both open and done tasks.
+    /// This will filter by checking if the predicate is contained within any priority tag.
+    ///
+    /// The filter is case insensitive.
+    ///
+    /// # Returns
+    /// A vector of tasks.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::List;
+    ///
+    /// let mut list = List::new("path/to/list.txt");
+    /// list.add("(A) Task 1");
+    /// list.add("(A) Task 2 @air");
+    /// list.add("(B) Task 3 @AIR");
+    /// list.add("(Z) Task 4 @AirCraft");
+    /// let filtered = list.by_prio_to_vec('a');
+    /// assert_eq!(filtered.len(), 2);
+    /// ```
+    pub fn by_prio_to_vec(&self, prio: char) -> Vec<Task> {
+        let prio = prio.to_uppercase().take(1).next().unwrap();
+        let mut filtered = Vec::new();
+        for task in self.tasks.values() {
+            if let Some(task_prio) = task.prio()
+                && task_prio == prio
+            {
+                filtered.push(task.clone());
+            }
+        }
+        filtered
+    }
+
     /// Filter tasks by text.
     ///
     /// Will filter both open and done tasks.
@@ -396,6 +431,41 @@ impl List {
             filtered_list.push_task(task);
         }
         filtered_list
+    }
+
+    /// Filter tasks by text.
+    ///
+    /// Will filter both open and done tasks.
+    /// This will filter by checking if the predicate is contained within the task text.
+    ///
+    /// The filter is case insensitive and also matches partial text.
+    ///
+    /// # Returns
+    /// A vector of tasks.
+    ///
+    /// # Example
+    /// ```
+    /// use anansi::List;
+    ///
+    /// let mut list = List::new("path/to/list.txt");
+    /// list.add("(A) Task 1");
+    /// list.add("(A) Task 2 @air");
+    /// list.add("(B) Task 3 @AIR");
+    /// list.add("(Z) Task 4 @AirCraft");
+    /// let filtered = list.by_text_to_vec("task");
+    /// assert_eq!(filtered.len(), 4);
+    /// let filtered = list.by_text_to_vec("air");
+    /// assert_eq!(filtered.len(), 3);
+    /// ```
+    pub fn by_text_to_vec(&self, text: &str) -> Vec<Task> {
+        let text = text.to_lowercase();
+        let mut filtered = Vec::new();
+        for task in self.tasks.values() {
+            if task.text().to_lowercase().contains(&text) {
+                filtered.push(task.clone());
+            }
+        }
+        filtered
     }
 
     /// Filter tasks by context.
