@@ -625,3 +625,33 @@ pub fn sort_vec_task(to_sort: &mut Vec<Task>, sort_by: SortBy) {
         }
     }
 }
+
+/// Search a vector of tasks.
+///
+/// # Returns
+/// A vector of tasks matching the search string in their priority.
+pub fn search_vec_task_prio(to_search: &Vec<Task>, search: &str) -> Vec<Task> {
+    let search = search.to_lowercase();
+    let mut filtered = Vec::new();
+    for task in to_search {
+        if task.text().to_lowercase().contains(&search) {
+            filtered.push(task.clone());
+        }
+    }
+    filtered
+}
+
+/// Search a vector of tasks.
+///
+/// # Returns
+/// A vector of tasks matching the search string in their text.
+pub fn search_vec_task_text(to_search: &Vec<Task>, search: &str) -> Vec<Task> {
+    let search = search.to_lowercase();
+    let mut filtered = Vec::new();
+    for task in to_search {
+        if task.text().to_lowercase().contains(&search) {
+            filtered.push(task.clone());
+        }
+    }
+    filtered
+}
