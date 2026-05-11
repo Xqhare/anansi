@@ -39,6 +39,36 @@ fn sort_by_prio_unique() {
 }
 
 #[test]
+fn sort_by_prio_with_non_prio_tasks() {
+    let mut list = List::new("prio_sorting.txt");
+    list.add("(Z) Task 1");
+    list.add("(X) Task 2");
+    list.add("(Q) Task 3");
+    list.add("(L) Task 4");
+    list.add("(J) Task 5");
+    list.add("(H) Task 6");
+    list.add("(C) Task 7");
+    list.add("(A) Task 8");
+    list.add("Task 9");
+    list.add("Task 10");
+    list.add("Task 11");
+
+    let sorted_tasks = list.sort(SortBy::Priority);
+    println!("{:?}", sorted_tasks);
+    assert_eq!(sorted_tasks[0].to_string(), "(A) Task 8");
+    assert_eq!(sorted_tasks[1].to_string(), "(C) Task 7");
+    assert_eq!(sorted_tasks[2].to_string(), "(H) Task 6");
+    assert_eq!(sorted_tasks[3].to_string(), "(J) Task 5");
+    assert_eq!(sorted_tasks[4].to_string(), "(L) Task 4");
+    assert_eq!(sorted_tasks[5].to_string(), "(Q) Task 3");
+    assert_eq!(sorted_tasks[6].to_string(), "(X) Task 2");
+    assert_eq!(sorted_tasks[7].to_string(), "(Z) Task 1");
+    assert_eq!(sorted_tasks[8].to_string(), "Task 9");
+    assert_eq!(sorted_tasks[9].to_string(), "Task 10");
+    assert_eq!(sorted_tasks[10].to_string(), "Task 11");
+}
+
+#[test]
 fn sort_by_priority_non_unique() {
     let mut list = List::new("prio_sorting.txt");
     // 8 tasks for Z, 1 task for X, 1 task for Q, 5 tasks for L, 5 tasks for J, 2 tasks for H
@@ -111,6 +141,7 @@ fn sort_by_inception_date_unique() {
     list.add("2022-01-03 (A) Task 6");
     list.add("2022-01-02 (A) Task 7");
     list.add("2022-01-01 (A) Task 8");
+    list.add("(A) Task 9");
 
     let sorted_tasks = list.sort(SortBy::InceptionDate);
     assert_eq!(sorted_tasks[0].to_string(), "2022-01-01 (A) Task 8");
@@ -121,6 +152,7 @@ fn sort_by_inception_date_unique() {
     assert_eq!(sorted_tasks[5].to_string(), "2022-01-06 (A) Task 3");
     assert_eq!(sorted_tasks[6].to_string(), "2022-01-07 (A) Task 2");
     assert_eq!(sorted_tasks[7].to_string(), "2022-01-08 (A) Task 1");
+    assert_eq!(sorted_tasks[8].to_string(), "(A) Task 9");
 }
 
 #[test]
@@ -174,6 +206,7 @@ fn sort_by_completion_date_unique() {
     list.add("x 2022-02-13 2022-01-03 (A) Task 6");
     list.add("x 2022-02-12 2022-01-02 (A) Task 7");
     list.add("x 2022-02-11 2022-01-01 (A) Task 8");
+    list.add("x (A) Task 9");
 
     let sorted_tasks = list.sort(SortBy::CompletionDate);
     assert_eq!(
@@ -208,6 +241,7 @@ fn sort_by_completion_date_unique() {
         sorted_tasks[7].to_string(),
         "x 2022-02-18 2022-01-08 (A) Task 1"
     );
+    assert_eq!(sorted_tasks[8].to_string(), "x (A) Task 9");
 }
 
 #[test]

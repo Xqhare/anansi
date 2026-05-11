@@ -5,7 +5,7 @@ use std::{collections::BTreeMap, path::PathBuf};
 
 use builder::{build_default_list, deserialise_list, serialise_list};
 
-use crate::{Task, error::AnansiResult, util::SortBy};
+use crate::{Date, Task, error::AnansiResult, util::SortBy};
 
 type TaskID = usize;
 
@@ -229,19 +229,49 @@ impl List {
     fn sort_priority(self) -> Vec<Task> {
         let mut tasks = self.tasks();
         tasks.sort_by(|a, b| a.prio().cmp(&b.prio()));
-        tasks
+        let mut no_prio = Vec::new();
+        let mut with_prio = Vec::new();
+        for task in tasks {
+            if task.prio().is_none() {
+                no_prio.push(task);
+            } else {
+                with_prio.push(task);
+            }
+        }
+        with_prio.extend(no_prio);
+        with_prio
     }
 
     fn sort_inception_date(self) -> Vec<Task> {
         let mut tasks = self.tasks();
         tasks.sort_by(|a, b| a.inception_date().cmp(&b.inception_date()));
-        tasks
+        let mut no_date = Vec::new();
+        let mut with_date = Vec::new();
+        for task in tasks {
+            if task.inception_date() == Date::default().to_string() {
+                no_date.push(task);
+            } else {
+                with_date.push(task);
+            }
+        }
+        with_date.extend(no_date);
+        with_date
     }
 
     fn sort_completion_date(self) -> Vec<Task> {
         let mut tasks = self.tasks();
         tasks.sort_by(|a, b| a.completion_date().cmp(&b.completion_date()));
-        tasks
+        let mut no_date = Vec::new();
+        let mut with_date = Vec::new();
+        for task in tasks {
+            if task.completion_date() == Date::default().to_string() {
+                no_date.push(task);
+            } else {
+                with_date.push(task);
+            }
+        }
+        with_date.extend(no_date);
+        with_date
     }
 
     /// Get all tasks.
@@ -598,7 +628,7 @@ impl List {
 ///
 /// # Example
 /// ```
-/// use anansi::{List, sort_vec_task, SortBy};
+/// use anansi::{List, vec::sort_vec_task, SortBy};
 /// let mut list = List::new("path/to/list.txt");
 /// list.add("(A) Task 1");
 /// list.add("(B) Task 2");
