@@ -1,7 +1,7 @@
 mod builder;
 mod test;
 
-use std::{collections::BTreeMap, path::PathBuf};
+use std::{collections::BTreeMap, ops::Deref, path::PathBuf};
 
 use builder::{build_default_list, deserialise_list, serialise_list};
 
@@ -646,12 +646,62 @@ impl List {
 /// ```
 pub fn sort_vec_task(to_sort: &mut Vec<Task>, sort_by: SortBy) {
     match sort_by {
-        SortBy::Priority => to_sort.sort_by(|a, b| a.prio().cmp(&b.prio())),
+        SortBy::Priority => {
+            to_sort.sort_by(|a, b| a.prio().cmp(&b.prio()));
+            let mut no_prio = Vec::new();
+            let mut with_prio = Vec::new();
+            let len = to_sort.len();
+            for task in to_sort.iter() {
+                if task.prio().is_none() {
+                    no_prio.push(task);
+                } else {
+                    with_prio.push(task);
+                }
+            }
+            with_prio.extend(no_prio);
+            let mut out = Vec::with_capacity(len);
+            for task in with_prio {
+                out.push(task.clone());
+            }
+            *to_sort = out
+        }
         SortBy::InceptionDate => {
-            to_sort.sort_by(|a, b| a.inception_date().cmp(&b.inception_date()))
+            to_sort.sort_by(|a, b| a.inception_date().cmp(&b.inception_date()));
+            let mut no_date = Vec::new();
+            let mut with_date = Vec::new();
+            let len = to_sort.len();
+            for task in to_sort.iter() {
+                if task.inception_date() == Date::default().to_string() {
+                    no_date.push(task);
+                } else {
+                    with_date.push(task);
+                }
+            }
+            with_date.extend(no_date);
+            let mut out = Vec::with_capacity(len);
+            for task in with_date {
+                out.push(task.clone());
+            }
+            *to_sort = out
         }
         SortBy::CompletionDate => {
-            to_sort.sort_by(|a, b| a.completion_date().cmp(&b.completion_date()))
+            to_sort.sort_by(|a, b| a.completion_date().cmp(&b.completion_date()));
+            let mut no_date = Vec::new();
+            let mut with_date = Vec::new();
+            let len = to_sort.len();
+            for task in to_sort.iter() {
+                if task.completion_date() == Date::default().to_string() {
+                    no_date.push(task);
+                } else {
+                    with_date.push(task);
+                }
+            }
+            with_date.extend(no_date);
+            let mut out = Vec::with_capacity(len);
+            for task in with_date {
+                out.push(task.clone());
+            }
+            *to_sort = out
         }
     }
 }
