@@ -41,6 +41,7 @@ fn sort_by_prio_unique() {
 #[test]
 fn sort_by_prio_with_non_prio_tasks() {
     let mut list = List::new("prio_sorting.txt");
+    list.add("Task 0");
     list.add("(Z) Task 1");
     list.add("(X) Task 2");
     list.add("(Q) Task 3");
@@ -63,9 +64,10 @@ fn sort_by_prio_with_non_prio_tasks() {
     assert_eq!(sorted_tasks[5].to_string(), "(Q) Task 3");
     assert_eq!(sorted_tasks[6].to_string(), "(X) Task 2");
     assert_eq!(sorted_tasks[7].to_string(), "(Z) Task 1");
-    assert_eq!(sorted_tasks[8].to_string(), "Task 9");
-    assert_eq!(sorted_tasks[9].to_string(), "Task 10");
-    assert_eq!(sorted_tasks[10].to_string(), "Task 11");
+    assert_eq!(sorted_tasks[8].to_string(), "Task 0");
+    assert_eq!(sorted_tasks[9].to_string(), "Task 9");
+    assert_eq!(sorted_tasks[10].to_string(), "Task 10");
+    assert_eq!(sorted_tasks[11].to_string(), "Task 11");
 }
 
 #[test]
