@@ -5,7 +5,7 @@ use std::{collections::BTreeMap, ops::Deref, path::PathBuf};
 
 use builder::{build_default_list, deserialise_list, serialise_list};
 
-use crate::{Date, Task, error::AnansiResult, util::SortBy};
+use crate::{AnansiError, Date, Task, error::AnansiResult, util::SortBy};
 
 type TaskID = usize;
 
@@ -81,6 +81,25 @@ impl List {
         }
         self.tasks.insert(id, task);
         id
+    }
+
+    /// Update a task in the list.
+    ///
+    /// Will error if the id does not exist.
+    ///
+    /// The `id` of the passed in `Task` is ignored and the supplied `id` is used.
+    pub fn update_task(&mut self, task: Task, id: TaskID) -> AnansiResult<()> {
+        if !self.is_id_used(id) {
+            return Err(AnansiError::InvalidID(format!("ID {} does not exist", id)));
+        }
+        let task = task.with_id(id);
+        if task.is_done() {
+            self.done_tasks.push(id);
+        } else {
+            self.open_tasks.push(id);
+        }
+        self.tasks.insert(id, task);
+        Ok(())
     }
 
     fn new_empty_with_path<P: Into<PathBuf>>(path: P) -> List {
