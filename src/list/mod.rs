@@ -741,8 +741,10 @@ pub fn search_vec_task_prio(to_search: &Vec<Task>, search: &str) -> Vec<Task> {
     let search = search.to_lowercase();
     let mut filtered = Vec::new();
     for task in to_search {
-        if task.text().to_lowercase().contains(&search) {
-            filtered.push(task.clone());
+        if let Some(prio) = task.prio() {
+            if &prio.to_lowercase().to_string() == search.as_str() {
+                filtered.push(task.clone());
+            }
         }
     }
     filtered

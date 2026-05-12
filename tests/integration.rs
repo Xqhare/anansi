@@ -1,4 +1,7 @@
-use anansi::{vec::sort_vec_task, *};
+use anansi::{
+    vec::{search_vec_task_prio, sort_vec_task},
+    *,
+};
 
 #[test]
 fn simple_use() {
@@ -8,6 +11,19 @@ fn simple_use() {
     list.add("Task 3");
     assert_eq!(list.open().len(), 2);
     assert_eq!(list.done().len(), 1);
+}
+
+#[test]
+fn search_prio() {
+    let mut list = List::new("list.txt");
+    list.add("(A) Task 1");
+    list.add("(B) Task 2");
+    list.add("(Z) Task 3");
+    list.add("Task 4");
+    list.add("Task 5");
+    let mut to_search = list.tasks();
+    to_search = search_vec_task_prio(&to_search, "a");
+    assert_eq!(to_search[0].to_string(), "(A) Task 1");
 }
 
 #[test]
