@@ -93,8 +93,14 @@ impl List {
             return Err(AnansiError::InvalidID(format!("ID {} does not exist", id)));
         }
         let task = task.with_id(id);
-        self.done_tasks.remove(id);
-        self.open_tasks.remove(id);
+        if self.done_tasks.contains(&id) {
+            let idx = self.done_tasks.iter().position(|x| *x == id).unwrap();
+            self.done_tasks.remove(idx);
+        }
+        if self.open_tasks.contains(&id) {
+            let idx = self.open_tasks.iter().position(|x| *x == id).unwrap();
+            self.open_tasks.remove(idx);
+        }
         if task.is_done() {
             self.done_tasks.push(id);
         } else {

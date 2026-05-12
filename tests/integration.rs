@@ -11,6 +11,28 @@ fn simple_use() {
 }
 
 #[test]
+fn mark_done_and_get_done() {
+    let mut list = List::new("list.txt");
+
+    let mut task = Task::new("Task 1", 0);
+    let id = list.push_task(task.clone());
+    list.add("x Task 2");
+    list.add("Task 3");
+    assert_eq!(list.open().len(), 2);
+    assert_eq!(list.done().len(), 1);
+
+    task = task.done(None).unwrap();
+    list.update_task(task.clone(), id).unwrap();
+    assert_eq!(list.done().len(), 2);
+    assert_eq!(list.open().len(), 1);
+
+    task = task.undone();
+    list.update_task(task.clone(), id).unwrap();
+    assert_eq!(list.done().len(), 1);
+    assert_eq!(list.open().len(), 2);
+}
+
+#[test]
 fn simple_extensive_use() {
     let mut list = List::new("list.txt");
     // 25 tasks
